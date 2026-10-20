@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'tracker_config.dart';
+import 'l10n/app_localizations.dart';
+import 'locale_controller.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -44,12 +46,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final shown = _installed
         .where((a) => (a['name'] as String).toLowerCase().contains(_query))
         .toList();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      appBar: AppBar(title: Text(l.settingsTitle)),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : Padding(
@@ -57,26 +60,40 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Alert after ${_config.thresholdMinutes} min of scrolling',
+                  Text(l.languageTitle, style: Theme.of(context).textTheme.titleMedium),
+                  SegmentedButton<String>(
+                    segments: [
+                      ButtonSegment(value: 'system', label: Text(l.languageSystem)),
+                      const ButtonSegment(value: 'en', label: Text('English')),
+                      const ButtonSegment(value: 'ja', label: Text('日本語')),
+                    ],
+                    selected: {_config.language},
+                    onSelectionChanged: (s) async {
+                      setState(() => _config.language = s.first);
+                      appLocale.value = localeFromCode(s.first);
+                      await _config.save();
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  Text(l.alertAfter(_config.thresholdMinutes),
                       style: Theme.of(context).textTheme.titleMedium),
                   Slider(
                     min: 1,
                     max: 60,
                     divisions: 59,
                     value: _config.thresholdMinutes.toDouble(),
-                    label: '${_config.thresholdMinutes} min',
+                    label: l.minutesShort(_config.thresholdMinutes),
                     onChanged: (v) =>
                         setState(() => _config.thresholdMinutes = v.round()),
                     onChangeEnd: (_) => _config.save(),
                   ),
-                  const Text('1-2 min is test mode (checks every 10 seconds).',
-                      style: TextStyle(fontSize: 12)),
+                  Text(l.testModeNote, style: TextStyle(fontSize: 12)),
                   const SizedBox(height: 16),
-                  Text('Apps the pet guards (${_config.apps.length})',
+                  Text(l.guardedApps(_config.apps.length),
                       style: Theme.of(context).textTheme.titleMedium),
                   TextField(
-                    decoration: const InputDecoration(
-                        prefixIcon: Icon(Icons.search), hintText: 'Search apps'),
+                    decoration: InputDecoration(
+                        prefixIcon: const Icon(Icons.search), hintText: l.searchApps),
                     onChanged: (v) =>
                         setState(() => _query = v.toLowerCase().trim()),
                   ),

@@ -5,13 +5,36 @@ import 'pet_screen.dart';
 import 'tasks_screen.dart';
 import 'settings_screen.dart';
 import 'memory.dart';
+import 'l10n/app_localizations.dart';
+import 'tracker_config.dart';
+import 'locale_controller.dart';
 
 final navKey = GlobalKey<NavigatorState>();
 
-void main() => runApp(MaterialApp(
-  navigatorKey: navKey,
-  home: const SpikePage(),
-));
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final cfg = await TrackerConfig.load();
+  appLocale.value = localeFromCode(cfg.language);
+  runApp(const DetoxApp());
+}
+
+class DetoxApp extends StatelessWidget {
+  const DetoxApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<Locale?>(
+      valueListenable: appLocale,
+      builder: (_, locale, _) => MaterialApp(
+        navigatorKey: navKey,
+        locale: locale,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const SpikePage(),
+      ),
+    );
+  }
+}
 
 class SpikePage extends StatefulWidget {
   const SpikePage({super.key});
@@ -132,14 +155,15 @@ class _SpikePageState extends State<SpikePage> with WidgetsBindingObserver {
   }
 
   Future<void> _showMemory() async {
-    final bullets = await PetMemory.buildBullets();
+    final l = AppLocalizations.of(context)!;
+    final bullets = await PetMemory.buildBullets(l);
     if (!mounted) return;
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('What the pet remembers'),
+        title: Text(l.memTitle),
         content: Text(bullets.isEmpty
-            ? 'Nothing yet. Get caught scrolling first.'
+            ? l.memNothing
             : bullets.map((b) => '- $b').join('\n')),
         actions: [
           TextButton(

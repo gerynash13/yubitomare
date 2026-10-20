@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'checkin.dart';
+import 'l10n/app_localizations.dart';
+import 'locale_controller.dart';
+import 'memory.dart';
 import 'roast_api.dart';
 import 'storage.dart';
-import 'memory.dart';
 
 class PetScreen extends StatefulWidget {
   final String app;
@@ -17,6 +20,9 @@ class _PetScreenState extends State<PetScreen> {
   String _full = '';
   String _shown = '';
   bool _loading = true;
+  bool _typingDone = false;
+  String? _answer; // a reason id, or 'skip'
+  bool _newTitle = false;
   Timer? _timer;
 
   @override
@@ -27,28 +33,45 @@ class _PetScreenState extends State<PetScreen> {
 
   Future<void> _load() async {
     try {
+      final lang = await effectiveLanguage();
+      final l = lookupAppLocalizations(Locale(lang));
       final task = await Store.nextTask();
-      final title = Store.titleFor(await Store.loadXp());
-      final history = await PetMemory.buildBullets();
+      final all = await PetMemory.buildBullets(l, currentApp: widget.app);
+      final history = all.isEmpty ? <String>[] : [(all..shuffle()).first];
       _full = await fetchRoast(
         app: widget.app,
         minutes: widget.minutes,
         task: task,
-        title: title,
         history: history,
+        lang: lang,
       );
     } catch (_) {
-      _full = "My brain is offline, but my eyes work fine. "
-          "Put the phone down.";
+      if (!mounted) return;
+      _full = AppLocalizations.of(context)!.petOffline;
     }
     if (!mounted) return;
     setState(() => _loading = false);
     _timer = Timer.periodic(const Duration(milliseconds: 30), (t) {
       if (_shown.length >= _full.length) {
         t.cancel();
+        setState(() => _typingDone = true);
         return;
       }
       setState(() => _shown = _full.substring(0, _shown.length + 1));
+    });
+  }
+
+  Future<void> _answerWith(String reason) async {
+    if (reason == 'skip') {
+      setState(() => _answer = 'skip');
+      return;
+    }
+    await Store.addCheckin(widget.app, reason);
+    final isNew = await Store.earnTitle('honest');
+    if (!mounted) return;
+    setState(() {
+      _answer = reason;
+      _newTitle = isNew;
     });
   }
 
@@ -58,34 +81,63 @@ class _PetScreenState extends State<PetScreen> {
     super.dispose();
   }
 
+  Widget _bubble(String text) => Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade200,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Text(text, style: const TextStyle(fontSize: 18)),
+      );
+
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Text(
-                  _loading ? '...' : _shown,
-                  style: const TextStyle(fontSize: 18),
-                ),
-              ),
+              const SizedBox(height: 48),
+              _bubble(_loading ? '...' : _shown),
               const SizedBox(height: 24),
-              // Placeholder pet. We'll swap in real "annoyed" art later.
-              const Icon(Icons.pets, size: 120),
+              // Placeholder bird. Real Tomarin art comes later.
+              const Icon(Icons.flutter_dash, size: 120),
+              const SizedBox(height: 24),
+              if (_typingDone && _answer == null) ...[
+                _bubble(l.ciAsk),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  alignment: WrapAlignment.center,
+                  children: [
+                    for (final id in checkinReasons)
+                      OutlinedButton(
+                        onPressed: () => _answerWith(id),
+                        child: Text(reasonLabel(l, id)),
+                      ),
+                  ],
+                ),
+                TextButton(
+                  onPressed: () => _answerWith('skip'),
+                  child: Text(l.ciSkip),
+                ),
+              ],
+              if (_answer != null && _answer != 'skip') ...[
+                _bubble('${reasonReply(l, _answer!)}\n${l.ciThanks}'),
+                if (_newTitle) ...[
+                  const SizedBox(height: 12),
+                  _bubble(l.titleEarnedHonest),
+                ],
+              ],
+              if (_answer == 'skip') _bubble(l.ciSkipReply),
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Fine. Back to work.'),
+                child: Text(l.petBackToWork),
               ),
             ],
           ),

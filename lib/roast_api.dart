@@ -10,6 +10,7 @@
     String? task,
     String? title,
     List<String>? history,
+    String lang = 'en',
   }) async {
     final res = await http.post(
       Uri.parse('$supabaseUrl/functions/v1/intervene'),
@@ -23,6 +24,7 @@
         'task': task,
         'title': title,
         'history': history ?? [],
+        'lang': lang,
       }),
     );
     if (res.statusCode != 200) {

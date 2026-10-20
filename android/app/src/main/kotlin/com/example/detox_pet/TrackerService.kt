@@ -11,6 +11,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ServiceInfo
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
@@ -18,38 +19,16 @@ import android.os.Looper
 import androidx.core.app.NotificationCompat
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.Locale
 
 class TrackerService : Service() {
-    private class Config(
-    val thresholdMs: Long,
-    val pollMs: Long,
-    val apps: Map<String, String>
-)
 
-    private fun loadConfig(): Config {
-        val prefs = getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
-        val raw = prefs.getString("flutter.tracker_config", null)
-        var minutes = 15
-        val apps = mutableMapOf<String, String>()
-        if (raw != null) {
-            try {
-                val obj = JSONObject(raw)
-                minutes = obj.optInt("thresholdMinutes", 15)
-                val arr = obj.optJSONArray("apps")
-                if (arr != null) {
-                    for (i in 0 until arr.length()) {
-                        val a = arr.getJSONObject(i)
-                        apps[a.getString("pkg")] = a.getString("name")
-                    }
-                }
-            } catch (_: Exception) {
-                // bad or missing settings: fall back to defaults
-            }
-        }
-        // Short limits = test mode, so poll faster. Otherwise once a minute.
-        val poll = if (minutes <= 2) 10_000L else 60_000L
-        return Config(minutes * 60_000L, poll, apps)
-    }
+    private class Config(
+        val thresholdMs: Long,
+        val pollMs: Long,
+        val apps: Map<String, String>,
+        val language: String
+    )
 
     private val handler = Handler(Looper.getMainLooper())
     private var running = false
@@ -58,6 +37,7 @@ class TrackerService : Service() {
     private var lastQuery = 0L
     private var blacklistedSince: Long? = null
     private var alerted = false
+    private var lang = "system"
 
     private val screenReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -74,14 +54,64 @@ class TrackerService : Service() {
     private val tick = object : Runnable {
         override fun run() {
             val cfg = loadConfig()
+            lang = cfg.language
             if (screenOn) check(cfg)
             handler.postDelayed(this, cfg.pollMs)
         }
     }
 
+    // ---------- settings ----------
+
+    private fun loadConfig(): Config {
+        val prefs = getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
+        val raw = prefs.getString("flutter.tracker_config", null)
+        var minutes = 15
+        var language = "system"
+        val apps = mutableMapOf<String, String>()
+        if (raw != null) {
+            try {
+                val obj = JSONObject(raw)
+                minutes = obj.optInt("thresholdMinutes", 15)
+                language = obj.optString("language", "system")
+                val arr = obj.optJSONArray("apps")
+                if (arr != null) {
+                    for (i in 0 until arr.length()) {
+                        val a = arr.getJSONObject(i)
+                        apps[a.getString("pkg")] = a.getString("name")
+                    }
+                }
+            } catch (_: Exception) {
+                // bad or missing settings: fall back to defaults
+            }
+        }
+        // Short limits = test mode, so poll faster. Otherwise once a minute.
+        val poll = if (minutes <= 2) 10_000L else 60_000L
+        return Config(minutes * 60_000L, poll, apps, language)
+    }
+
+    // ---------- language ----------
+
+    private fun localized(locale: Locale): Context {
+        val config = Configuration(resources.configuration)
+        config.setLocale(locale)
+        return createConfigurationContext(config)
+    }
+
+    private fun str(id: Int, vararg args: Any): String {
+        val ctx: Context = when (lang) {
+            "en" -> localized(Locale.ENGLISH)
+            "ja" -> localized(Locale.JAPANESE)
+            else -> this // follow the device language
+        }
+        return ctx.getString(id, *args)
+    }
+
+    // ---------- service lifecycle ----------
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        lang = loadConfig().language
         createChannels()
-        val n = statusNotification("Watching...")
+        val n = statusNotification(str(R.string.status_watching))
         if (Build.VERSION.SDK_INT >= 34) {
             startForeground(1, n, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
         } else {
@@ -103,6 +133,27 @@ class TrackerService : Service() {
         return START_STICKY
     }
 
+    override fun onDestroy() {
+        handler.removeCallbacks(tick)
+        if (running) unregisterReceiver(screenReceiver)
+        running = false
+        super.onDestroy()
+    }
+
+    override fun onBind(intent: Intent?): IBinder? = null
+
+    // ---------- tracking ----------
+
+    private fun labelFor(pkg: String?): String {
+        if (pkg == null) return "?"
+        return try {
+            val info = packageManager.getApplicationInfo(pkg, 0)
+            packageManager.getApplicationLabel(info).toString()
+        } catch (_: Exception) {
+            pkg // apps without a launcher icon (system screens etc.) keep the package name
+        }
+    }
+
     private fun check(cfg: Config) {
         val usm = getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
         val now = System.currentTimeMillis()
@@ -120,7 +171,7 @@ class TrackerService : Service() {
         if (appName != null) {
             if (blacklistedSince == null) blacklistedSince = now
             val elapsed = now - blacklistedSince!!
-            updateStatus("On $appName for ${elapsed / 1000}s")
+            updateStatus(str(R.string.status_on_app, appName, elapsed / 1000))
             if (elapsed >= cfg.thresholdMs && !alerted) {
                 alerted = true
                 sendAlert(appName, elapsed / 60_000)
@@ -128,62 +179,11 @@ class TrackerService : Service() {
         } else {
             blacklistedSince = null
             alerted = false
-            updateStatus("Watching... now: ${labelFor(pkg)}")
+            updateStatus(str(R.string.status_watching_now, labelFor(pkg)))
         }
     }
 
-    private fun labelFor(pkg: String?): String {
-        if (pkg == null) return "unknown"
-        return try {
-            val info = packageManager.getApplicationInfo(pkg, 0)
-            packageManager.getApplicationLabel(info).toString()
-        } catch (_: Exception) {
-            pkg // apps without a launcher icon (system screens etc.) keep the package name
-        }
-    }
-
-    private fun createChannels() {
-        if (Build.VERSION.SDK_INT >= 26) {
-            val nm = getSystemService(NotificationManager::class.java)
-            nm.createNotificationChannel(
-                NotificationChannel("tracker", "Tracker status", NotificationManager.IMPORTANCE_LOW))
-            nm.createNotificationChannel(
-                NotificationChannel("alerts", "Pet alerts", NotificationManager.IMPORTANCE_HIGH))
-        }
-    }
-
-    private fun statusNotification(text: String) =
-        NotificationCompat.Builder(this, "tracker")
-            .setSmallIcon(android.R.drawable.ic_menu_view)
-            .setContentTitle("Pet is watching")
-            .setContentText(text)
-            .setOnlyAlertOnce(true)
-            .setOngoing(true)
-            .build()
-
-    private fun updateStatus(text: String) {
-        getSystemService(NotificationManager::class.java).notify(1, statusNotification(text))
-    }
-
-    private fun sendAlert(appName: String, minutes: Long) {
-        logIntervention(appName, minutes)
-        val intent = Intent(this, MainActivity::class.java)
-            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-            .putExtra("alert_app", appName)
-            .putExtra("alert_minutes", minutes)
-        val open = PendingIntent.getActivity(
-            this, 0, intent,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        )
-        val n = NotificationCompat.Builder(this, "alerts")
-            .setSmallIcon(android.R.drawable.ic_dialog_alert)
-            .setContentTitle("Hey. Scroller.")
-            .setContentText("Still on $appName? Tap to face your pet.")
-            .setContentIntent(open)
-            .setAutoCancel(true)
-            .build()
-        getSystemService(NotificationManager::class.java).notify(2, n)
-    }
+    // ---------- memory log ----------
 
     private fun logIntervention(appName: String, minutes: Long) {
         val prefs = getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
@@ -205,12 +205,54 @@ class TrackerService : Service() {
         prefs.edit().putString("flutter.interventions", trimmed.toString()).apply()
     }
 
-    override fun onDestroy() {
-        handler.removeCallbacks(tick)
-        if (running) unregisterReceiver(screenReceiver)
-        running = false
-        super.onDestroy()
+    // ---------- notifications ----------
+
+    private fun createChannels() {
+        if (Build.VERSION.SDK_INT >= 26) {
+            val nm = getSystemService(NotificationManager::class.java)
+            nm.createNotificationChannel(
+                NotificationChannel(
+                    "tracker", str(R.string.channel_tracker), NotificationManager.IMPORTANCE_LOW
+                )
+            )
+            nm.createNotificationChannel(
+                NotificationChannel(
+                    "alerts", str(R.string.channel_alerts), NotificationManager.IMPORTANCE_HIGH
+                )
+            )
+        }
     }
 
-    override fun onBind(intent: Intent?): IBinder? = null
+    private fun statusNotification(text: String) =
+        NotificationCompat.Builder(this, "tracker")
+            .setSmallIcon(android.R.drawable.ic_menu_view)
+            .setContentTitle(str(R.string.tracker_status_title))
+            .setContentText(text)
+            .setOnlyAlertOnce(true)
+            .setOngoing(true)
+            .build()
+
+    private fun updateStatus(text: String) {
+        getSystemService(NotificationManager::class.java).notify(1, statusNotification(text))
+    }
+
+    private fun sendAlert(appName: String, minutes: Long) {
+        logIntervention(appName, minutes)
+        val intent = Intent(this, MainActivity::class.java)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            .putExtra("alert_app", appName)
+            .putExtra("alert_minutes", minutes)
+        val open = PendingIntent.getActivity(
+            this, 0, intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        val n = NotificationCompat.Builder(this, "alerts")
+            .setSmallIcon(android.R.drawable.ic_dialog_alert)
+            .setContentTitle(str(R.string.alert_title))
+            .setContentText(str(R.string.alert_text, appName))
+            .setContentIntent(open)
+            .setAutoCancel(true)
+            .build()
+        getSystemService(NotificationManager::class.java).notify(2, n)
+    }
 }

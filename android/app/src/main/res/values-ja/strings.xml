@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tracker_status_title">ペットが見張り中</string>
+    <string name="status_watching">見張り中…</string>
+    <string name="status_watching_now">見張り中… 現在: %1$s</string>
+    <string name="status_on_app">%1$sを見て%2$d秒</string>
+    <string name="alert_title">ちょっと、スクロール民。</string>
+    <string name="alert_text">まだ%1$sを見てるの？タップしてペットと向き合おう。</string>
+    <string name="channel_tracker">見張りの状態</string>
+    <string name="channel_alerts">ペットからの警告</string>
+</resources>

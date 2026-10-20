@@ -56,4 +56,42 @@ class Store {
     if (xp >= 100) return 'Focus Apprentice';
     return 'Filthy Casual Scroller';
   }
+
+  static int levelFor(int xp) {
+    if (xp >= 600) return 3;
+    if (xp >= 300) return 2;
+    if (xp >= 100) return 1;
+    return 0;
+  }
+
+  static Future<List<Map<String, dynamic>>> loadCheckins() async {
+    final p = await SharedPreferences.getInstance();
+    final raw = p.getString('checkins');
+    if (raw == null) return [];
+    return (jsonDecode(raw) as List)
+        .map((e) => Map<String, dynamic>.from(e as Map))
+        .toList();
+  }
+
+  static Future<void> addCheckin(String app, String reason) async {
+    final p = await SharedPreferences.getInstance();
+    final list = await loadCheckins();
+    list.add({
+      't': DateTime.now().millisecondsSinceEpoch,
+      'app': app,
+      'reason': reason,
+    });
+    final trimmed = list.length > 200 ? list.sublist(list.length - 200) : list;
+    await p.setString('checkins', jsonEncode(trimmed));
+  }
+
+  /// Returns true only the first time a title is earned
+  static Future<bool> earnTitle(String id) async {
+    final p = await SharedPreferences.getInstance();
+    final titles = p.getStringList('earned_titles') ?? [];
+    if (titles.contains(id)) return false;
+    titles.add(id);
+    await p.setStringList('earned_titles', titles);
+    return true;
+  }
 }

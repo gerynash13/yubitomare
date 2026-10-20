@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'storage.dart';
+import 'l10n/app_localizations.dart';
 
 class TasksScreen extends StatefulWidget {
   const TasksScreen({super.key});
@@ -58,22 +59,23 @@ class _TasksScreenState extends State<TasksScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Tasks & XP')),
+      appBar: AppBar(title: Text(l.tasksTitle)),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(Store.titleFor(_xp),
+            Text(l.levelTitle(Store.levelFor(_xp).toString()),
                 style: Theme.of(context).textTheme.headlineSmall),
-            Text('$_xp XP'),
+            Text(l.xpValue(_xp)),
             const SizedBox(height: 16),
             Row(children: [
               Expanded(
                 child: TextField(
                   controller: _ctl,
-                  decoration: const InputDecoration(labelText: 'Add a task'),
+                  decoration: InputDecoration(labelText: l.addTaskLabel),
                   onSubmitted: (_) => _add(),
                 ),
               ),

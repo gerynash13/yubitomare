@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tracker_status_title">Pet is watching</string>
+    <string name="status_watching">Watching...</string>
+    <string name="status_watching_now">Watching... now: %1$s</string>
+    <string name="status_on_app">On %1$s for %2$ds</string>
+    <string name="alert_title">Hey. Scroller.</string>
+    <string name="alert_text">Still on %1$s? Tap to face your pet.</string>
+    <string name="channel_tracker">Tracker status</string>
+    <string name="channel_alerts">Pet alerts</string>
+</resources>
