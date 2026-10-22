@@ -112,4 +112,19 @@ class Store {
     m[app] = actionId;
     await p.setString('plans', jsonEncode(m));
   }
+
+  static String _todayKey() {
+    final n = DateTime.now();
+    return '${n.year}-${n.month}-${n.day}';
+  }
+
+  static Future<bool> hardnessAskedToday() async {
+    final p = await SharedPreferences.getInstance();
+    return p.getString('hard_asked_on') == _todayKey();
+  }
+
+  static Future<void> markHardnessAsked() async {
+    final p = await SharedPreferences.getInstance();
+    await p.setString('hard_asked_on', _todayKey());
+  }  
 }

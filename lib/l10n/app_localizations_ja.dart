@@ -59,7 +59,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get petBackToWork => 'わかったよ。作業に戻る。';
 
   @override
-  String get petOffline => '頭はオフラインだけど、目はちゃんと見てるよ。スマホを置こう。';
+  String get petOffline => 'つんつん。ちょっと長いぴ。……なにか、あった？';
 
   @override
   String get languageTitle => '言語';
@@ -117,16 +117,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get ciSkip => 'いまはいいや';
 
   @override
-  String get ciReplyTired => 'つかれてたんだね。次はその時間に、とまりんが先にぴとっとするぴ。';
+  String get ciReplyTired => 'そっか、疲れてたんだね。話してくれてありがとぴ。';
 
   @override
-  String get ciReplyBored => 'ひまだったんだね。次はその時間に、とまりんが先にぴとっとして、ほかのことに誘うよ。';
+  String get ciReplyBored => 'ひまだったんだね。ちゃんと教えてくれて、えらいぴ。';
 
   @override
-  String get ciReplyAuto => '気づいたら開いてること、あるよね。次はとまりんが先にぴとっとするぴ。';
+  String get ciReplyAuto => '気づいたら開いてること、あるよね。教えてくれてありがとぴ。';
 
   @override
-  String get ciReplyNotif => '通知にひっぱられちゃったんだね。次は通知がきたら、とまりんが先にぴとっとするよ。';
+  String get ciReplyNotif => '通知にひっぱられちゃったんだね。……とまりんも、もっと早く気づけたらよかった。';
 
   @override
   String get ciThanks => '教えてくれてありがとぴ。ちゃんと言えるの、えらいぴ。';
@@ -195,7 +195,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get planAsk => 'ひとつだけ、いっしょにプランを決めよ？ 開きたくなったとき、なにする？';
+  String get planAsk => 'じゃあ最後に。次に開きたくなったとき用に、ひとつだけ決めとこ？';
 
   @override
   String get planSkip => 'あとでいいよ';
@@ -224,11 +224,66 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String planReminder(String plan) {
-    return 'こないだ決めたプラン、覚えてる？ $plan';
+    return 'そういえば、決めたプランがあったよね。$plan';
   }
 
   @override
   String tasksDone(int done, int total) {
     return '$total件中$done件完了';
   }
+
+  @override
+  String hardAsk(String task) {
+    return 'ところで、「$task」……いちばん手をつけにくいのは、どこ？';
+  }
+
+  @override
+  String get hardBig => '大きすぎる';
+
+  @override
+  String get hardStart => 'どこから始めたらいいかわからない';
+
+  @override
+  String get hardAfraid => 'うまくできるか不安';
+
+  @override
+  String get hardBoring => 'つまらない';
+
+  @override
+  String get hardHeavy => 'ずっとしんどい';
+
+  @override
+  String get hardReplyBig => '大きいと、固まっちゃうよね。ファイルやノートを開くだけでも、立派な一歩だよ。';
+
+  @override
+  String get hardReplyStart => 'どこから始めるか迷うよね。『最初にやること』を、ひとことで書くだけでいいぴ。';
+
+  @override
+  String get hardReplyAfraid => 'さいしょは下手でいいんだよ。雑なままで、2分だけやってみよ？';
+
+  @override
+  String get hardReplyBoring => 'つまらないと、手が止まるよね。2分だけやって、そのあとお水でも飲も？';
+
+  @override
+  String get planPlay => 'やってみる';
+
+  @override
+  String get planPlayReply => 'うん、いってらっしゃい。とまりんはここで待ってるぴ。';
+
+  @override
+  String get planLaterReply => 'うん、わかった。';
+
+  @override
+  String get sincere1 => '……ねえ、ちょっと真面目な話してもいい？';
+
+  @override
+  String get sincere2 =>
+      'ずっとしんどいときは、とまりんだけで抱えなくていいよ。家族や友だち、先生、信頼できる人に、ひとことだけでも話してみてほしいな。';
+
+  @override
+  String get sincere3 =>
+      '話しにくいときは、無料の電話相談もあるよ。よりそいホットライン（0120-279-338）は24時間つながるよ。「消えたい」って気持ちのときは、#いのちSOS（0120-061-338）もあるよ。';
+
+  @override
+  String get sincere4 => 'とまりんは、ここにいるよ。';
 }

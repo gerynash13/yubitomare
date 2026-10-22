@@ -167,7 +167,7 @@ abstract class AppLocalizations {
   /// No description provided for @petOffline.
   ///
   /// In en, this message translates to:
-  /// **'My brain is offline, but my eyes work fine. Put the phone down.'**
+  /// **'*Peck peck.* That has been a while. Is something up?'**
   String get petOffline;
 
   /// No description provided for @languageTitle.
@@ -263,25 +263,25 @@ abstract class AppLocalizations {
   /// No description provided for @ciReplyTired.
   ///
   /// In en, this message translates to:
-  /// **'You were tired, huh. Next time, Tomarin will perch on your screen first.'**
+  /// **'I see, you were tired. Thank you for telling Tomarin.'**
   String get ciReplyTired;
 
   /// No description provided for @ciReplyBored.
   ///
   /// In en, this message translates to:
-  /// **'You were bored, huh. Next time, Tomarin will perch on your screen first and suggest something else.'**
+  /// **'You were bored. Tomarin appreciates you being honest.'**
   String get ciReplyBored;
 
   /// No description provided for @ciReplyAuto.
   ///
   /// In en, this message translates to:
-  /// **'That happens. It is easy to open it without noticing. Next time, Tomarin will perch on your screen first.'**
+  /// **'That happens, it is easy to open it without noticing. Thank you for telling Tomarin.'**
   String get ciReplyAuto;
 
   /// No description provided for @ciReplyNotif.
   ///
   /// In en, this message translates to:
-  /// **'A notification pulled you in. Next time one comes, Tomarin will perch on your screen first.'**
+  /// **'A notification pulled you in. Tomarin wishes it had noticed sooner.'**
   String get ciReplyNotif;
 
   /// No description provided for @ciThanks.
@@ -377,7 +377,7 @@ abstract class AppLocalizations {
   /// No description provided for @planAsk.
   ///
   /// In en, this message translates to:
-  /// **'Want to make one small plan together? What will you do when the urge hits?'**
+  /// **'Last thing: want to decide one small thing to do next time the urge hits?'**
   String get planAsk;
 
   /// No description provided for @planSkip.
@@ -425,7 +425,7 @@ abstract class AppLocalizations {
   /// No description provided for @planReminder.
   ///
   /// In en, this message translates to:
-  /// **'Remember the plan you made? {plan}'**
+  /// **'Oh, and you already made a plan. {plan}'**
   String planReminder(String plan);
 
   /// No description provided for @tasksDone.
@@ -433,6 +433,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{done} of {total} done'**
   String tasksDone(int done, int total);
+
+  /// No description provided for @hardAsk.
+  ///
+  /// In en, this message translates to:
+  /// **'By the way, about {task}: what feels hardest about it?'**
+  String hardAsk(String task);
+
+  /// No description provided for @hardBig.
+  ///
+  /// In en, this message translates to:
+  /// **'I feel like it\'s too big of a task'**
+  String get hardBig;
+
+  /// No description provided for @hardStart.
+  ///
+  /// In en, this message translates to:
+  /// **'I do not know where to start'**
+  String get hardStart;
+
+  /// No description provided for @hardAfraid.
+  ///
+  /// In en, this message translates to:
+  /// **'I am afraid of doing it badly'**
+  String get hardAfraid;
+
+  /// No description provided for @hardBoring.
+  ///
+  /// In en, this message translates to:
+  /// **'It is boring'**
+  String get hardBoring;
+
+  /// No description provided for @hardHeavy.
+  ///
+  /// In en, this message translates to:
+  /// **'I have felt heavy for a while'**
+  String get hardHeavy;
+
+  /// No description provided for @hardReplyBig.
+  ///
+  /// In en, this message translates to:
+  /// **'Big things make anyone freeze. Even just opening the file or notebook counts as a start.'**
+  String get hardReplyBig;
+
+  /// No description provided for @hardReplyStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Not knowing where to start is hard. How about writing one line about what comes first?'**
+  String get hardReplyStart;
+
+  /// No description provided for @hardReplyAfraid.
+  ///
+  /// In en, this message translates to:
+  /// **'Your first try can be rough. Want to do it messily for just 2 minutes?'**
+  String get hardReplyAfraid;
+
+  /// No description provided for @hardReplyBoring.
+  ///
+  /// In en, this message translates to:
+  /// **'Boring tasks make hands stop. Try 2 minutes, then a glass of water as a reward.'**
+  String get hardReplyBoring;
+
+  /// No description provided for @planPlay.
+  ///
+  /// In en, this message translates to:
+  /// **'I will try it'**
+  String get planPlay;
+
+  /// No description provided for @planPlayReply.
+  ///
+  /// In en, this message translates to:
+  /// **'Okay, go for it. Tomarin will be waiting here.'**
+  String get planPlayReply;
+
+  /// No description provided for @planLaterReply.
+  ///
+  /// In en, this message translates to:
+  /// **'Okay, got it.'**
+  String get planLaterReply;
+
+  /// No description provided for @sincere1.
+  ///
+  /// In en, this message translates to:
+  /// **'...Hey, can I talk to you seriously for a moment?'**
+  String get sincere1;
+
+  /// No description provided for @sincere2.
+  ///
+  /// In en, this message translates to:
+  /// **'If things have felt heavy for a long time, you do not have to carry it alone. Even a word to family, a friend, a teacher or someone you trust can help.'**
+  String get sincere2;
+
+  /// No description provided for @sincere3.
+  ///
+  /// In en, this message translates to:
+  /// **'If it is hard to say out loud, there are free phone lines in Japan. Yorisoi Hotline (0120-279-338) is open 24 hours, and Inochi SOS (0120-061-338) is there for feelings like wanting to disappear.'**
+  String get sincere3;
+
+  /// No description provided for @sincere4.
+  ///
+  /// In en, this message translates to:
+  /// **'Tomarin is right here.'**
+  String get sincere4;
 }
 
 class _AppLocalizationsDelegate

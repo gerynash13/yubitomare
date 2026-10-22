@@ -45,3 +45,33 @@ String planActionLabel(AppLocalizations l, String id) {
 
 String planSentence(AppLocalizations l, String app, String actionId) =>
     l.planSentence(app, planActionLabel(l, actionId));
+
+const hardIds = ['big', 'start', 'afraid', 'boring', 'heavy'];
+
+String hardLabel(AppLocalizations l, String id) {
+  switch (id) {
+    case 'big':
+      return l.hardBig;
+    case 'start':
+      return l.hardStart;
+    case 'afraid':
+      return l.hardAfraid;
+    case 'boring':
+      return l.hardBoring;
+    default:
+      return l.hardHeavy;
+  }
+}
+
+String hardReply(AppLocalizations l, String id) {
+  switch (id) {
+    case 'big':
+      return l.hardReplyBig;
+    case 'start':
+      return l.hardReplyStart;
+    case 'afraid':
+      return l.hardReplyAfraid;
+    default:
+      return l.hardReplyBoring;
+  }
+}

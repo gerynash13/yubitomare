@@ -60,7 +60,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get petOffline =>
-      'My brain is offline, but my eyes work fine. Put the phone down.';
+      '*Peck peck.* That has been a while. Is something up?';
 
   @override
   String get languageTitle => 'Language';
@@ -120,19 +120,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ciReplyTired =>
-      'You were tired, huh. Next time, Tomarin will perch on your screen first.';
+      'I see, you were tired. Thank you for telling Tomarin.';
 
   @override
   String get ciReplyBored =>
-      'You were bored, huh. Next time, Tomarin will perch on your screen first and suggest something else.';
+      'You were bored. Tomarin appreciates you being honest.';
 
   @override
   String get ciReplyAuto =>
-      'That happens. It is easy to open it without noticing. Next time, Tomarin will perch on your screen first.';
+      'That happens, it is easy to open it without noticing. Thank you for telling Tomarin.';
 
   @override
   String get ciReplyNotif =>
-      'A notification pulled you in. Next time one comes, Tomarin will perch on your screen first.';
+      'A notification pulled you in. Tomarin wishes it had noticed sooner.';
 
   @override
   String get ciThanks =>
@@ -205,7 +205,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get planAsk =>
-      'Want to make one small plan together? What will you do when the urge hits?';
+      'Last thing: want to decide one small thing to do next time the urge hits?';
 
   @override
   String get planSkip => 'Maybe later';
@@ -234,11 +234,70 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String planReminder(String plan) {
-    return 'Remember the plan you made? $plan';
+    return 'Oh, and you already made a plan. $plan';
   }
 
   @override
   String tasksDone(int done, int total) {
     return '$done of $total done';
   }
+
+  @override
+  String hardAsk(String task) {
+    return 'By the way, about $task: what feels hardest about it?';
+  }
+
+  @override
+  String get hardBig => 'I feel like it\'s too big of a task';
+
+  @override
+  String get hardStart => 'I do not know where to start';
+
+  @override
+  String get hardAfraid => 'I am afraid of doing it badly';
+
+  @override
+  String get hardBoring => 'It is boring';
+
+  @override
+  String get hardHeavy => 'I have felt heavy for a while';
+
+  @override
+  String get hardReplyBig =>
+      'Big things make anyone freeze. Even just opening the file or notebook counts as a start.';
+
+  @override
+  String get hardReplyStart =>
+      'Not knowing where to start is hard. How about writing one line about what comes first?';
+
+  @override
+  String get hardReplyAfraid =>
+      'Your first try can be rough. Want to do it messily for just 2 minutes?';
+
+  @override
+  String get hardReplyBoring =>
+      'Boring tasks make hands stop. Try 2 minutes, then a glass of water as a reward.';
+
+  @override
+  String get planPlay => 'I will try it';
+
+  @override
+  String get planPlayReply => 'Okay, go for it. Tomarin will be waiting here.';
+
+  @override
+  String get planLaterReply => 'Okay, got it.';
+
+  @override
+  String get sincere1 => '...Hey, can I talk to you seriously for a moment?';
+
+  @override
+  String get sincere2 =>
+      'If things have felt heavy for a long time, you do not have to carry it alone. Even a word to family, a friend, a teacher or someone you trust can help.';
+
+  @override
+  String get sincere3 =>
+      'If it is hard to say out loud, there are free phone lines in Japan. Yorisoi Hotline (0120-279-338) is open 24 hours, and Inochi SOS (0120-061-338) is there for feelings like wanting to disappear.';
+
+  @override
+  String get sincere4 => 'Tomarin is right here.';
 }
