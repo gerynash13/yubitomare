@@ -8,6 +8,8 @@ import 'memory.dart';
 import 'l10n/app_localizations.dart';
 import 'tracker_config.dart';
 import 'locale_controller.dart';
+import 'bond.dart';
+import 'focus_screen.dart';
 
 final navKey = GlobalKey<NavigatorState>();
 
@@ -85,6 +87,28 @@ class _SpikePageState extends State<SpikePage> with WidgetsBindingObserver {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            FutureBuilder<BondState>(
+              future: Bond.load(),
+              builder: (context, snap) {
+                final s = snap.data;
+                if (s == null) return const SizedBox.shrink();
+                final l = AppLocalizations.of(context)!;
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(l.bondLevelName(Bond.levelFor(s.points).toString()),
+                          style: Theme.of(context).textTheme.titleMedium),
+                      const SizedBox(height: 4),
+                      LinearProgressIndicator(value: Bond.progress(s.points)),
+                      const SizedBox(height: 4),
+                      Text(l.bondPoints(s.points)),
+                    ],
+                  ),
+                );
+              },
+            ),
             Text('Usage access: ${_hasAccess ? "GRANTED" : "not granted"}'),
             const SizedBox(height: 8),
             Wrap(spacing: 8, children: [
@@ -103,6 +127,14 @@ class _SpikePageState extends State<SpikePage> with WidgetsBindingObserver {
                   MaterialPageRoute(builder: (_) => const SettingsScreen())), 
                   child: const Text('Settings'),),
               ElevatedButton(onPressed: _showMemory, child: const Text('Pet memory'),),
+              ElevatedButton(
+                onPressed: () async {
+                  await navKey.currentState?.push(
+                      MaterialPageRoute(builder: (_) => const FocusScreen()));
+                  if (mounted) setState(() {});
+                },
+                child: const Text('Focus'),
+              ),
             ]),
             TextField(
               controller: _taskCtl,
@@ -139,19 +171,22 @@ class _SpikePageState extends State<SpikePage> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
+      setState(() {});
       _checkPendingAlert();
     }
   }
 
   Future<void> _checkPendingAlert() async {
-    final alert = await _channel.invokeMapMethod<String, dynamic>('getPendingAlert');
+    final alert =
+        await _channel.invokeMapMethod<String, dynamic>('getPendingAlert');
     if (alert == null) return;
-    navKey.currentState?.push(MaterialPageRoute(
+    await navKey.currentState?.push(MaterialPageRoute(
       builder: (_) => PetScreen(
         app: alert['app'] as String,
         minutes: (alert['minutes'] as num).toInt(),
       ),
     ));
+    if (mounted) setState(() {});
   }
 
   Future<void> _showMemory() async {

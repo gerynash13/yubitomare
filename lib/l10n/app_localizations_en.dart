@@ -150,4 +150,51 @@ class AppLocalizationsEn extends AppLocalizations {
   String memReason(String reason) {
     return 'Usually slips because: $reason.';
   }
+
+  @override
+  String bondLevelName(String level) {
+    String _temp0 = intl.Intl.selectLogic(level, {
+      '0': 'Nice to meet you',
+      '1': 'Getting close',
+      '2': 'Friends',
+      '3': 'Best friends',
+      'other': 'Together forever',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String bondPoints(int points) {
+    return 'Bond $points';
+  }
+
+  @override
+  String get bondUp => 'Tomarin feels like it got closer to you.';
+
+  @override
+  String get focusHint => 'Press and hold to finish';
+
+  @override
+  String focusElapsed(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String focusDone(int minutes) {
+    return 'Thank you for staying with Tomarin for $minutes min.';
+  }
+
+  @override
+  String focusBondGain(int points) {
+    return 'Bond +$points';
+  }
+
+  @override
+  String get focusCapped => 'That is plenty for today. Rest well, okay?';
+
+  @override
+  String get focusShort => 'Come back anytime. Tomarin will be here.';
+
+  @override
+  String get focusClose => 'Close';
 }

@@ -141,4 +141,51 @@ class AppLocalizationsJa extends AppLocalizations {
   String memReason(String reason) {
     return 'つい開いちゃう理由は、だいたい「$reason」。';
   }
+
+  @override
+  String bondLevelName(String level) {
+    String _temp0 = intl.Intl.selectLogic(level, {
+      '0': 'はじめまして',
+      '1': 'なかよし',
+      '2': 'ともだち',
+      '3': 'しんゆう',
+      'other': 'ずっとなかま',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String bondPoints(int points) {
+    return '絆 $points';
+  }
+
+  @override
+  String get bondUp => 'なんか……もっと仲良くなれた気がするぴ。';
+
+  @override
+  String get focusHint => '長押しで終わる';
+
+  @override
+  String focusElapsed(int minutes) {
+    return '$minutes分';
+  }
+
+  @override
+  String focusDone(int minutes) {
+    return '$minutes分、とまりんといっしょにいてくれてありがとぴ。';
+  }
+
+  @override
+  String focusBondGain(int points) {
+    return '絆 +$points';
+  }
+
+  @override
+  String get focusCapped => '今日はもう十分がんばったぴ。ゆっくり休んでね。';
+
+  @override
+  String get focusShort => 'またいつでもおいで。とまりんはここにいるよ。';
+
+  @override
+  String get focusClose => 'とじる';
 }

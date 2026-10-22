@@ -6,6 +6,7 @@ import 'locale_controller.dart';
 import 'memory.dart';
 import 'roast_api.dart';
 import 'storage.dart';
+import 'bond.dart';
 
 class PetScreen extends StatefulWidget {
   final String app;
@@ -23,6 +24,7 @@ class _PetScreenState extends State<PetScreen> {
   bool _typingDone = false;
   String? _answer; // a reason id, or 'skip'
   bool _newTitle = false;
+  bool _levelUp = false;
   Timer? _timer;
 
   @override
@@ -68,10 +70,12 @@ class _PetScreenState extends State<PetScreen> {
     }
     await Store.addCheckin(widget.app, reason);
     final isNew = await Store.earnTitle('honest');
+    final bond = await Bond.addCheckin();
     if (!mounted) return;
     setState(() {
       _answer = reason;
       _newTitle = isNew;
+      _levelUp = bond.leveledUp;
     });
   }
 
@@ -131,6 +135,10 @@ class _PetScreenState extends State<PetScreen> {
                 if (_newTitle) ...[
                   const SizedBox(height: 12),
                   _bubble(l.titleEarnedHonest),
+                ],
+                if (_levelUp) ...[
+                  const SizedBox(height: 12),
+                  _bubble(l.bondUp),
                 ],
               ],
               if (_answer == 'skip') _bubble(l.ciSkipReply),

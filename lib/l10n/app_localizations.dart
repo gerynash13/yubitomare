@@ -307,6 +307,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Usually slips because: {reason}.'**
   String memReason(String reason);
+
+  /// No description provided for @bondLevelName.
+  ///
+  /// In en, this message translates to:
+  /// **'{level, select, 0{Nice to meet you} 1{Getting close} 2{Friends} 3{Best friends} other{Together forever}}'**
+  String bondLevelName(String level);
+
+  /// No description provided for @bondPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Bond {points}'**
+  String bondPoints(int points);
+
+  /// No description provided for @bondUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Tomarin feels like it got closer to you.'**
+  String get bondUp;
+
+  /// No description provided for @focusHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Press and hold to finish'**
+  String get focusHint;
+
+  /// No description provided for @focusElapsed.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min'**
+  String focusElapsed(int minutes);
+
+  /// No description provided for @focusDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you for staying with Tomarin for {minutes} min.'**
+  String focusDone(int minutes);
+
+  /// No description provided for @focusBondGain.
+  ///
+  /// In en, this message translates to:
+  /// **'Bond +{points}'**
+  String focusBondGain(int points);
+
+  /// No description provided for @focusCapped.
+  ///
+  /// In en, this message translates to:
+  /// **'That is plenty for today. Rest well, okay?'**
+  String get focusCapped;
+
+  /// No description provided for @focusShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Come back anytime. Tomarin will be here.'**
+  String get focusShort;
+
+  /// No description provided for @focusClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get focusClose;
 }
 
 class _AppLocalizationsDelegate

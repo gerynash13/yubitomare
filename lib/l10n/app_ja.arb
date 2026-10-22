@@ -34,5 +34,15 @@
   "ciThanks": "教えてくれてありがとぴ。ちゃんと言えるの、えらいぴ。",
   "ciSkipReply": "うん、いまはいいよ。話したくなったら、いつでも言ってね。",
   "titleEarnedHonest": "『正直者』ゲットだぴ！ とまりん、誇らしいぴ。",
-  "memReason": "つい開いちゃう理由は、だいたい「{reason}」。"
+  "memReason": "つい開いちゃう理由は、だいたい「{reason}」。",
+  "bondLevelName": "{level, select, 0{はじめまして} 1{なかよし} 2{ともだち} 3{しんゆう} other{ずっとなかま}}",
+  "bondPoints": "絆 {points}",
+  "bondUp": "なんか……もっと仲良くなれた気がするぴ。",
+  "focusHint": "長押しで終わる",
+  "focusElapsed": "{minutes}分",
+  "focusDone": "{minutes}分、とまりんといっしょにいてくれてありがとぴ。",
+  "focusBondGain": "絆 +{points}",
+  "focusCapped": "今日はもう十分がんばったぴ。ゆっくり休んでね。",
+  "focusShort": "またいつでもおいで。とまりんはここにいるよ。",
+  "focusClose": "とじる"
 }

@@ -45,5 +45,20 @@
   "ciSkipReply": "Okay, no pressure. Tell Tomarin whenever you feel like it.",
   "titleEarnedHonest": "Title earned: Honest One! Tomarin is so proud.",
   "memReason": "Usually slips because: {reason}.",
-  "@memReason": { "placeholders": { "reason": { "type": "String" } } }
+  "@memReason": { "placeholders": { "reason": { "type": "String" } } },
+  "bondLevelName": "{level, select, 0{Nice to meet you} 1{Getting close} 2{Friends} 3{Best friends} other{Together forever}}",
+  "@bondLevelName": { "placeholders": { "level": { "type": "String" } } },
+  "bondPoints": "Bond {points}",
+  "@bondPoints": { "placeholders": { "points": { "type": "int" } } },
+  "bondUp": "Tomarin feels like it got closer to you.",
+  "focusHint": "Press and hold to finish",
+  "focusElapsed": "{minutes} min",
+  "@focusElapsed": { "placeholders": { "minutes": { "type": "int" } } },
+  "focusDone": "Thank you for staying with Tomarin for {minutes} min.",
+  "@focusDone": { "placeholders": { "minutes": { "type": "int" } } },
+  "focusBondGain": "Bond +{points}",
+  "@focusBondGain": { "placeholders": { "points": { "type": "int" } } },
+  "focusCapped": "That is plenty for today. Rest well, okay?",
+  "focusShort": "Come back anytime. Tomarin will be here.",
+  "focusClose": "Close"
 }
