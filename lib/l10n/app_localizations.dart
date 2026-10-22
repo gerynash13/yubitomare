@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// No description provided for @tasksTitle.
   ///
   /// In en, this message translates to:
-  /// **'Tasks & XP'**
+  /// **'Tasks'**
   String get tasksTitle;
 
   /// No description provided for @addTaskLabel.
@@ -367,6 +367,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Close'**
   String get focusClose;
+
+  /// No description provided for @bondGainSmall.
+  ///
+  /// In en, this message translates to:
+  /// **'+{points} Bond'**
+  String bondGainSmall(int points);
+
+  /// No description provided for @planAsk.
+  ///
+  /// In en, this message translates to:
+  /// **'Want to make one small plan together? What will you do when the urge hits?'**
+  String get planAsk;
+
+  /// No description provided for @planSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Maybe later'**
+  String get planSkip;
+
+  /// No description provided for @planActCharge.
+  ///
+  /// In en, this message translates to:
+  /// **'put my phone on the charger and stretch'**
+  String get planActCharge;
+
+  /// No description provided for @planActWater.
+  ///
+  /// In en, this message translates to:
+  /// **'drink some water'**
+  String get planActWater;
+
+  /// No description provided for @planActFocus.
+  ///
+  /// In en, this message translates to:
+  /// **'open the focus screen'**
+  String get planActFocus;
+
+  /// No description provided for @planActTiny.
+  ///
+  /// In en, this message translates to:
+  /// **'do the first tiny step of my task for 2 minutes'**
+  String get planActTiny;
+
+  /// No description provided for @planSentence.
+  ///
+  /// In en, this message translates to:
+  /// **'If I feel like opening {app}, then I will {action}.'**
+  String planSentence(String app, String action);
+
+  /// No description provided for @planSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'It is settled. {plan} Tomarin will remember it too.'**
+  String planSaved(String plan);
+
+  /// No description provided for @planReminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Remember the plan you made? {plan}'**
+  String planReminder(String plan);
+
+  /// No description provided for @tasksDone.
+  ///
+  /// In en, this message translates to:
+  /// **'{done} of {total} done'**
+  String tasksDone(int done, int total);
 }
 
 class _AppLocalizationsDelegate

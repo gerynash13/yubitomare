@@ -27,3 +27,21 @@ String reasonReply(AppLocalizations l, String id) {
       return l.ciReplyNotif;
   }
 }
+
+const planActions = ['charge', 'water', 'focus', 'tiny'];
+
+String planActionLabel(AppLocalizations l, String id) {
+  switch (id) {
+    case 'charge':
+      return l.planActCharge;
+    case 'water':
+      return l.planActWater;
+    case 'focus':
+      return l.planActFocus;
+    default:
+      return l.planActTiny;
+  }
+}
+
+String planSentence(AppLocalizations l, String app, String actionId) =>
+    l.planSentence(app, planActionLabel(l, actionId));

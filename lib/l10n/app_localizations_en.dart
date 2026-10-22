@@ -10,7 +10,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get tasksTitle => 'Tasks & XP';
+  String get tasksTitle => 'Tasks';
 
   @override
   String get addTaskLabel => 'Add a task';
@@ -197,4 +197,48 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get focusClose => 'Close';
+
+  @override
+  String bondGainSmall(int points) {
+    return '+$points Bond';
+  }
+
+  @override
+  String get planAsk =>
+      'Want to make one small plan together? What will you do when the urge hits?';
+
+  @override
+  String get planSkip => 'Maybe later';
+
+  @override
+  String get planActCharge => 'put my phone on the charger and stretch';
+
+  @override
+  String get planActWater => 'drink some water';
+
+  @override
+  String get planActFocus => 'open the focus screen';
+
+  @override
+  String get planActTiny => 'do the first tiny step of my task for 2 minutes';
+
+  @override
+  String planSentence(String app, String action) {
+    return 'If I feel like opening $app, then I will $action.';
+  }
+
+  @override
+  String planSaved(String plan) {
+    return 'It is settled. $plan Tomarin will remember it too.';
+  }
+
+  @override
+  String planReminder(String plan) {
+    return 'Remember the plan you made? $plan';
+  }
+
+  @override
+  String tasksDone(int done, int total) {
+    return '$done of $total done';
+  }
 }

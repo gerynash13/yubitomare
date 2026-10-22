@@ -1,6 +1,6 @@
 {
   "@@locale": "ja",
-  "tasksTitle": "タスク & XP",
+  "tasksTitle": "タスク",
   "addTaskLabel": "タスクを追加",
   "xpValue": "{xp} XP",
   "levelTitle": "{level, select, 0{万年スクロール民} 1{集中見習い} 2{自制心の達人} other{選ばれし者}}",
@@ -14,7 +14,7 @@
   "petOffline": "頭はオフラインだけど、目はちゃんと見てるよ。スマホを置こう。",
   "languageTitle": "言語",
   "languageSystem": "端末に合わせる",
-    "memTitle": "ペットの記憶",
+  "memTitle": "ペットの記憶",
   "memNothing": "まだ何もないよ。まずはスクロールして捕まってみよう。",
   "memCaught": "この7日間で{count}回、スクロールしているところを目撃された。",
   "memWeakness": "最大の弱点: {app}（{count}回）。",
@@ -44,5 +44,16 @@
   "focusBondGain": "絆 +{points}",
   "focusCapped": "今日はもう十分がんばったぴ。ゆっくり休んでね。",
   "focusShort": "またいつでもおいで。とまりんはここにいるよ。",
-  "focusClose": "とじる"
+  "focusClose": "とじる",
+  "bondGainSmall": "+{points}絆",
+  "planAsk": "ひとつだけ、いっしょにプランを決めよ？ 開きたくなったとき、なにする？",
+  "planSkip": "あとでいいよ",
+  "planActCharge": "スマホを充電器に置いて、のびをする",
+  "planActWater": "お水を飲む",
+  "planActFocus": "集中画面を開く",
+  "planActTiny": "タスクの最初の一歩を2分だけやる",
+  "planSentence": "{app}を開きたくなったら、{action}。",
+  "planSaved": "決まりだぴ。{plan} とまりんも覚えとくよ。",
+  "planReminder": "こないだ決めたプラン、覚えてる？ {plan}",
+  "tasksDone": "{total}件中{done}件完了"
 }

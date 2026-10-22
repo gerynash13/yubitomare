@@ -94,4 +94,22 @@ class Store {
     await p.setStringList('earned_titles', titles);
     return true;
   }
+
+  static Future<String?> planFor(String app) async {
+    final p = await SharedPreferences.getInstance();
+    final raw = p.getString('plans');
+    if (raw == null) return null;
+    final m = jsonDecode(raw) as Map<String, dynamic>;
+    return m[app] as String?;
+  }
+
+  static Future<void> savePlan(String app, String actionId) async {
+    final p = await SharedPreferences.getInstance();
+    final raw = p.getString('plans');
+    final m = raw == null
+        ? <String, dynamic>{}
+        : jsonDecode(raw) as Map<String, dynamic>;
+    m[app] = actionId;
+    await p.setString('plans', jsonEncode(m));
+  }
 }

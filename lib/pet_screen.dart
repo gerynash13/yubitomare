@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'bond.dart';
 import 'checkin.dart';
 import 'l10n/app_localizations.dart';
 import 'locale_controller.dart';
 import 'memory.dart';
 import 'roast_api.dart';
 import 'storage.dart';
-import 'bond.dart';
 
 class PetScreen extends StatefulWidget {
   final String app;
@@ -25,6 +25,10 @@ class _PetScreenState extends State<PetScreen> {
   String? _answer; // a reason id, or 'skip'
   bool _newTitle = false;
   bool _levelUp = false;
+  int _bondGained = 0;
+  String? _task;
+  String? _plan; // saved plan (action id) for this app, if any
+  String? _planChoice; // action id picked just now, or 'skip'
   Timer? _timer;
 
   @override
@@ -34,16 +38,17 @@ class _PetScreenState extends State<PetScreen> {
   }
 
   Future<void> _load() async {
+    _plan = await Store.planFor(widget.app);
+    _task = await Store.nextTask();
     try {
       final lang = await effectiveLanguage();
       final l = lookupAppLocalizations(Locale(lang));
-      final task = await Store.nextTask();
       final all = await PetMemory.buildBullets(l, currentApp: widget.app);
       final history = all.isEmpty ? <String>[] : [(all..shuffle()).first];
       _full = await fetchRoast(
         app: widget.app,
         minutes: widget.minutes,
-        task: task,
+        task: _task,
         history: history,
         lang: lang,
       );
@@ -76,7 +81,14 @@ class _PetScreenState extends State<PetScreen> {
       _answer = reason;
       _newTitle = isNew;
       _levelUp = bond.leveledUp;
+      _bondGained = bond.gained;
     });
+  }
+
+  Future<void> _choosePlan(String id) async {
+    if (id != 'skip') await Store.savePlan(widget.app, id);
+    if (!mounted) return;
+    setState(() => _planChoice = id);
   }
 
   @override
@@ -98,6 +110,7 @@ class _PetScreenState extends State<PetScreen> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
+    final answered = _answer != null && _answer != 'skip';
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -110,6 +123,10 @@ class _PetScreenState extends State<PetScreen> {
               // Placeholder bird. Real Tomarin art comes later.
               const Icon(Icons.flutter_dash, size: 120),
               const SizedBox(height: 24),
+              if (_typingDone && _plan != null) ...[
+                _bubble(l.planReminder(planSentence(l, widget.app, _plan!))),
+                const SizedBox(height: 12),
+              ],
               if (_typingDone && _answer == null) ...[
                 _bubble(l.ciAsk),
                 const SizedBox(height: 12),
@@ -130,8 +147,22 @@ class _PetScreenState extends State<PetScreen> {
                   child: Text(l.ciSkip),
                 ),
               ],
-              if (_answer != null && _answer != 'skip') ...[
+              if (answered) ...[
                 _bubble('${reasonReply(l, _answer!)}\n${l.ciThanks}'),
+                if (_bondGained > 0)
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 4, right: 8),
+                      child: Text(
+                        l.bondGainSmall(_bondGained),
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                    ),
+                  ),
                 if (_newTitle) ...[
                   const SizedBox(height: 12),
                   _bubble(l.titleEarnedHonest),
@@ -139,6 +170,32 @@ class _PetScreenState extends State<PetScreen> {
                 if (_levelUp) ...[
                   const SizedBox(height: 12),
                   _bubble(l.bondUp),
+                ],
+                if (_plan == null && _planChoice == null) ...[
+                  const SizedBox(height: 16),
+                  _bubble(l.planAsk),
+                  const SizedBox(height: 8),
+                  for (final id in planActions)
+                    if (id != 'tiny' || _task != null)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton(
+                            onPressed: () => _choosePlan(id),
+                            child: Text(planActionLabel(l, id)),
+                          ),
+                        ),
+                      ),
+                  TextButton(
+                    onPressed: () => _choosePlan('skip'),
+                    child: Text(l.planSkip),
+                  ),
+                ],
+                if (_planChoice != null && _planChoice != 'skip') ...[
+                  const SizedBox(height: 12),
+                  _bubble(l.planSaved(
+                      planSentence(l, widget.app, _planChoice!))),
                 ],
               ],
               if (_answer == 'skip') _bubble(l.ciSkipReply),

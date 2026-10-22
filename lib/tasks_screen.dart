@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'storage.dart';
 import 'l10n/app_localizations.dart';
+import 'storage.dart';
 
 class TasksScreen extends StatefulWidget {
   const TasksScreen({super.key});
@@ -11,7 +11,6 @@ class TasksScreen extends StatefulWidget {
 class _TasksScreenState extends State<TasksScreen> {
   final _ctl = TextEditingController();
   List<Task> _tasks = [];
-  int _xp = 0;
 
   @override
   void initState() {
@@ -27,11 +26,7 @@ class _TasksScreenState extends State<TasksScreen> {
 
   Future<void> _load() async {
     final t = await Store.loadTasks();
-    final x = await Store.loadXp();
-    setState(() {
-      _tasks = t;
-      _xp = x;
-    });
+    setState(() => _tasks = t);
   }
 
   Future<void> _add() async {
@@ -43,13 +38,8 @@ class _TasksScreenState extends State<TasksScreen> {
   }
 
   Future<void> _toggle(Task t) async {
-    setState(() {
-      t.done = !t.done;
-      _xp += t.done ? Store.xpPerTask : -Store.xpPerTask;
-      if (_xp < 0) _xp = 0;
-    });
+    setState(() => t.done = !t.done);
     await Store.saveTasks(_tasks);
-    await Store.saveXp(_xp);
   }
 
   Future<void> _remove(Task t) async {
@@ -60,6 +50,7 @@ class _TasksScreenState extends State<TasksScreen> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
+    final done = _tasks.where((t) => t.done).length;
     return Scaffold(
       appBar: AppBar(title: Text(l.tasksTitle)),
       body: Padding(
@@ -67,9 +58,7 @@ class _TasksScreenState extends State<TasksScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l.levelTitle(Store.levelFor(_xp).toString()),
-                style: Theme.of(context).textTheme.headlineSmall),
-            Text(l.xpValue(_xp)),
+            Text(l.tasksDone(done, _tasks.length)),
             const SizedBox(height: 16),
             Row(children: [
               Expanded(
@@ -90,11 +79,13 @@ class _TasksScreenState extends State<TasksScreen> {
                           child: CheckboxListTile(
                             value: t.done,
                             onChanged: (_) => _toggle(t),
-                            title: Text(t.text,
-                                style: TextStyle(
-                                    decoration: t.done
-                                        ? TextDecoration.lineThrough
-                                        : null)),
+                            title: Text(
+                              t.text,
+                              style: TextStyle(
+                                decoration:
+                                    t.done ? TextDecoration.lineThrough : null,
+                              ),
+                            ),
                           ),
                         ))
                     .toList(),

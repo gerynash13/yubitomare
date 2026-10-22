@@ -10,7 +10,7 @@ class AppLocalizationsJa extends AppLocalizations {
   AppLocalizationsJa([String locale = 'ja']) : super(locale);
 
   @override
-  String get tasksTitle => 'タスク & XP';
+  String get tasksTitle => 'タスク';
 
   @override
   String get addTaskLabel => 'タスクを追加';
@@ -188,4 +188,47 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get focusClose => 'とじる';
+
+  @override
+  String bondGainSmall(int points) {
+    return '+$points絆';
+  }
+
+  @override
+  String get planAsk => 'ひとつだけ、いっしょにプランを決めよ？ 開きたくなったとき、なにする？';
+
+  @override
+  String get planSkip => 'あとでいいよ';
+
+  @override
+  String get planActCharge => 'スマホを充電器に置いて、のびをする';
+
+  @override
+  String get planActWater => 'お水を飲む';
+
+  @override
+  String get planActFocus => '集中画面を開く';
+
+  @override
+  String get planActTiny => 'タスクの最初の一歩を2分だけやる';
+
+  @override
+  String planSentence(String app, String action) {
+    return '$appを開きたくなったら、$action。';
+  }
+
+  @override
+  String planSaved(String plan) {
+    return '決まりだぴ。$plan とまりんも覚えとくよ。';
+  }
+
+  @override
+  String planReminder(String plan) {
+    return 'こないだ決めたプラン、覚えてる？ $plan';
+  }
+
+  @override
+  String tasksDone(int done, int total) {
+    return '$total件中$done件完了';
+  }
 }

@@ -121,7 +121,7 @@ class _SpikePageState extends State<SpikePage> with WidgetsBindingObserver {
               ElevatedButton(
                 onPressed: () => navKey.currentState?.push(
                   MaterialPageRoute(builder: (_) => const TasksScreen())), 
-                  child: const Text('Tasks & XP'),),
+                  child: const Text('Tasks'),),
               ElevatedButton(
                 onPressed: () => navKey.currentState?.push(
                   MaterialPageRoute(builder: (_) => const SettingsScreen())), 
