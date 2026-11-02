@@ -16,9 +16,11 @@ import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.provider.Settings
 import androidx.core.app.NotificationCompat
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.Calendar
 import java.util.Locale
 
 class TrackerService : Service() {
@@ -30,7 +32,18 @@ class TrackerService : Service() {
         val language: String
     )
 
+    // What is happening during the current visit to a guarded app.
+    private enum class Visit { NEW, SHOWING, PASSED, SENT_HOME }
+
+    companion object {
+        // Tune these freely. Set DAILY_PASSES high while testing the lower levels.
+        const val DAILY_PASSES = 3
+        val PASS_OPTIONS = listOf(5, 10, 15)       // minutes
+        val WAIT_SECONDS = listOf(5, 10, 20)       // countdown per level
+    }
+
     private val handler = Handler(Looper.getMainLooper())
+    private val overlay by lazy { InterceptOverlay(this) }
     private var running = false
     private var screenOn = true
     private var currentPkg: String? = null
@@ -39,12 +52,18 @@ class TrackerService : Service() {
     private var alerted = false
     private var lang = "system"
 
+    private var visit = Visit.NEW
+    private val passUntil = mutableMapOf<String, Long>() // package -> pass end time
+    private var shownApp: String? = null
+    private var shownLevel = 0
+
     private val screenReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action == Intent.ACTION_SCREEN_OFF) {
                 screenOn = false
                 blacklistedSince = null // a locked screen counts as a break
                 alerted = false
+                dismissAsLeft()
             } else if (intent.action == Intent.ACTION_SCREEN_ON) {
                 screenOn = true
             }
@@ -84,8 +103,8 @@ class TrackerService : Service() {
                 // bad or missing settings: fall back to defaults
             }
         }
-        // Short limits = test mode, so poll faster. Otherwise once a minute.
-        val poll = if (minutes <= 2) 10_000L else 60_000L
+        // Poll often so the overlay appears right after the app opens.
+        val poll = 2_000L
         return Config(minutes * 60_000L, poll, apps, language)
     }
 
@@ -134,6 +153,7 @@ class TrackerService : Service() {
     }
 
     override fun onDestroy() {
+        overlay.hide()
         handler.removeCallbacks(tick)
         if (running) unregisterReceiver(screenReceiver)
         running = false
@@ -168,8 +188,30 @@ class TrackerService : Service() {
 
         val pkg = currentPkg
         val appName = if (pkg != null) cfg.apps[pkg] else null
-        if (appName != null) {
-            if (blacklistedSince == null) blacklistedSince = now
+        if (appName != null && pkg != null) {
+            if (blacklistedSince == null) {
+                blacklistedSince = now
+                visit = Visit.NEW
+            }
+
+            // The intercept: decide what this moment in the visit needs.
+            when (visit) {
+                Visit.NEW -> {
+                    val until = passUntil[pkg] ?: 0L
+                    if (until > now) {
+                        visit = Visit.PASSED // came back during an unused pass
+                    } else {
+                        showIntercept(pkg, appName, (cfg.thresholdMs / 60_000L).toInt())
+                    }
+                }
+                Visit.PASSED -> {
+                    if (now >= (passUntil[pkg] ?: 0L)) {
+                        showIntercept(pkg, appName, (cfg.thresholdMs / 60_000L).toInt())
+                    }
+                }
+                else -> {} // SHOWING: wait for a tap. SENT_HOME: wait for the launcher.
+            }
+
             val elapsed = now - blacklistedSince!!
             updateStatus(str(R.string.status_on_app, appName, elapsed / 1000))
             if (elapsed >= cfg.thresholdMs && !alerted) {
@@ -177,10 +219,120 @@ class TrackerService : Service() {
                 sendAlert(appName, elapsed / 60_000)
             }
         } else {
+            dismissAsLeft()
             blacklistedSince = null
             alerted = false
             updateStatus(str(R.string.status_watching_now, labelFor(pkg)))
         }
+    }
+
+    // ---------- the overlay ----------
+
+    private fun showIntercept(pkg: String, appName: String, capMinutes: Int) {
+        if (!Settings.canDrawOverlays(this)) return
+
+        val used = passesToday()
+        val locked = used >= DAILY_PASSES
+        val level = minOf(used, 2)
+
+        val title = when {
+            locked -> str(R.string.overlay_title_locked, appName)
+            level == 0 -> str(R.string.overlay_title, appName)
+            level == 1 -> str(R.string.overlay_title_2, appName)
+            else -> str(R.string.overlay_title_3, appName, used + 1)
+        }
+        // Pass lengths never exceed the length set in Settings (always at least one choice).
+        val options = if (locked) {
+            emptyList()
+        } else {
+            PASS_OPTIONS.filter { it <= capMinutes }.ifEmpty { listOf(capMinutes) }
+        }
+
+        visit = Visit.SHOWING
+        shownApp = appName
+        shownLevel = used
+
+        overlay.show(
+            title = title,
+            backLabel = str(R.string.overlay_back),
+            options = options,
+            optionLabel = { m -> str(R.string.overlay_more, m) },
+            optionWaitLabel = { m, s -> str(R.string.overlay_more_wait, m, s) },
+            waitSeconds = WAIT_SECONDS[level],
+            onBack = {
+                logIntercept(appName, "back", used, 0)
+                visit = Visit.SENT_HOME
+                goHome()
+            },
+            onPass = { m ->
+                logIntercept(appName, "pass", used, m)
+                passUntil[pkg] = System.currentTimeMillis() + m * 60_000L
+                visit = Visit.PASSED
+            }
+        )
+    }
+
+    /** The user left (home, recents, screen off) without answering the card. */
+    private fun dismissAsLeft() {
+        if (overlay.isShowing) {
+            overlay.hide()
+            shownApp?.let { logIntercept(it, "left", shownLevel, 0) }
+        }
+        visit = Visit.NEW
+    }
+
+    private fun goHome() {
+        startActivity(
+            Intent(Intent.ACTION_MAIN)
+                .addCategory(Intent.CATEGORY_HOME)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        )
+    }
+
+    // ---------- intercept log ----------
+
+    private fun readLog(): JSONArray {
+        val prefs = getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
+        return try {
+            JSONArray(prefs.getString("flutter.intercepts", "[]") ?: "[]")
+        } catch (_: Exception) {
+            JSONArray()
+        }
+    }
+
+    /** outcome is "back", "pass" or "left". level = passes already used today. */
+    private fun logIntercept(appName: String, outcome: String, level: Int, minutes: Int) {
+        val old = readLog()
+        old.put(
+            JSONObject()
+                .put("t", System.currentTimeMillis())
+                .put("app", appName)
+                .put("outcome", outcome)
+                .put("level", level)
+                .put("min", minutes)
+        )
+        val trimmed = JSONArray()
+        val start = maxOf(0, old.length() - 300)
+        for (i in start until old.length()) trimmed.put(old.get(i))
+        getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
+            .edit().putString("flutter.intercepts", trimmed.toString()).apply()
+    }
+
+    private fun passesToday(): Int {
+        val cal = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        val start = cal.timeInMillis
+        val arr = readLog()
+        var n = 0
+        for (i in 0 until arr.length()) {
+            val o = arr.getJSONObject(i)
+            if (o.optString("outcome") == "pass" && o.optLong("t") >= start) n++
+        }
+        return n
     }
 
     // ---------- memory log ----------

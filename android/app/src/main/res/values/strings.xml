@@ -8,4 +8,11 @@
     <string name="alert_text">Still on %1$s? Tap to face your pet.</string>
     <string name="channel_tracker">Tracker status</string>
     <string name="channel_alerts">Pet alerts</string>
+    <string name="overlay_title">Peck. You just opened %1$s, right?</string>
+    <string name="overlay_title_2">Again? You were just on %1$s.</string>
+    <string name="overlay_title_3">What are you doing?! That is %2$d times on %1$s today!</string>
+    <string name="overlay_title_locked">That is it. %1$s is closed for today.</string>
+    <string name="overlay_back">Go back</string>
+    <string name="overlay_more">%1$d more min</string>
+    <string name="overlay_more_wait">%1$d more min (%2$d)</string>
 </resources>

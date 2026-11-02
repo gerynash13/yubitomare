@@ -5,11 +5,15 @@ class TrackerConfig {
   int thresholdMinutes;
   Map<String, String> apps; // package name -> friendly name
   String language; // 'system', 'en' or 'ja'
+  String strictness; // 'gentle', 'normal' or 'firm'
+  String name;
 
   TrackerConfig({
     this.thresholdMinutes = 15,
     Map<String, String>? apps,
     this.language = 'system',
+    this.strictness = 'normal',
+    this.name = '',
   }) : apps = apps ?? {};
 
   static const _key = 'tracker_config';
@@ -27,6 +31,8 @@ class TrackerConfig {
       thresholdMinutes: (j['thresholdMinutes'] as num?)?.toInt() ?? 15,
       apps: apps,
       language: (j['language'] as String?) ?? 'system',
+      strictness: (j['strictness'] as String?) ?? 'gentle',
+      name: (j['name'] as String?) ?? '',
     );
   }
 
@@ -40,6 +46,8 @@ class TrackerConfig {
         'apps': apps.entries
             .map((e) => {'pkg': e.key, 'name': e.value})
             .toList(),
+        'strictness': strictness,
+        'name': name,
       }),
     );
   }

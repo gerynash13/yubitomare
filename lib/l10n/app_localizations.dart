@@ -535,6 +535,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tomarin is right here.'**
   String get sincere4;
+
+  /// No description provided for @strictnessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tomarin\'s strictness'**
+  String get strictnessTitle;
+
+  /// No description provided for @strictnessGentle.
+  ///
+  /// In en, this message translates to:
+  /// **'Gentle'**
+  String get strictnessGentle;
+
+  /// No description provided for @strictnessNormal.
+  ///
+  /// In en, this message translates to:
+  /// **'Normal'**
+  String get strictnessNormal;
+
+  /// No description provided for @strictnessFirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Firm'**
+  String get strictnessFirm;
+
+  /// No description provided for @nameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'What should Tomarin call you?'**
+  String get nameLabel;
 }
 
 class _AppLocalizationsDelegate

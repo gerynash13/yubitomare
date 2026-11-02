@@ -135,6 +135,10 @@ class _SpikePageState extends State<SpikePage> with WidgetsBindingObserver {
                 },
                 child: const Text('Focus'),
               ),
+              ElevatedButton(
+                onPressed: () => _channel.invokeMethod('openOverlaySettings'),
+                child: const Text('Overlay permission'),
+              ),
             ]),
             TextField(
               controller: _taskCtl,

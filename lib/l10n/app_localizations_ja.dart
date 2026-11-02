@@ -286,4 +286,19 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get sincere4 => 'とまりんは、ここにいるよ。';
+
+  @override
+  String get strictnessTitle => 'とまりんの厳しさ';
+
+  @override
+  String get strictnessGentle => 'やさしめ';
+
+  @override
+  String get strictnessNormal => 'ふつう';
+
+  @override
+  String get strictnessFirm => 'きびしめ';
+
+  @override
+  String get nameLabel => 'とまりんに呼んでほしい名前は?';
 }

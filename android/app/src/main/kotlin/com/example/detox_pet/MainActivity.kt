@@ -17,6 +17,7 @@ import android.Manifest
 import android.os.Build
 import androidx.core.content.ContextCompat
 import android.os.Bundle
+import android.net.Uri
 
 class MainActivity : FlutterActivity() {
     private val channelName = "detox_pet/usage"
@@ -69,6 +70,13 @@ class MainActivity : FlutterActivity() {
                     "getPendingAlert" -> {
                         result.success(pendingAlert)
                         pendingAlert = null
+                    }
+                    "hasOverlayPermission" -> result.success(Settings.canDrawOverlays(this))
+                    "openOverlaySettings" -> {
+                        startActivity(
+                            Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
+                        )
+                        result.success(null)
                     }
                     "getInstalledApps" -> {
                         val launcher = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)

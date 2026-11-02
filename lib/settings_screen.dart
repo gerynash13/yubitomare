@@ -12,6 +12,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   static const _channel = MethodChannel('detox_pet/usage');
+  final _nameCtl = TextEditingController();
   TrackerConfig _config = TrackerConfig();
   List<Map> _installed = [];
   String _query = '';
@@ -25,12 +26,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _load() async {
     final cfg = await TrackerConfig.load();
+    _nameCtl.text = cfg.name;
     final list = await _channel.invokeListMethod<Map>('getInstalledApps');
     setState(() {
       _config = cfg;
       _installed = list ?? [];
       _loading = false;
     });
+  }
+
+  @override
+  void dispose() {
+    _nameCtl.dispose();
+    super.dispose();
   }
 
   Future<void> _toggleApp(String pkg, String name, bool on) async {
@@ -72,6 +80,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       setState(() => _config.language = s.first);
                       appLocale.value = localeFromCode(s.first);
                       await _config.save();
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  Text(l.strictnessTitle, style: Theme.of(context).textTheme.titleMedium),
+                  SegmentedButton<String>(
+                    segments: [
+                      ButtonSegment(value: 'gentle', label: Text(l.strictnessGentle)),
+                      ButtonSegment(value: 'normal', label: Text(l.strictnessNormal)),
+                      ButtonSegment(value: 'firm', label: Text(l.strictnessFirm)),
+                    ],
+                    selected: {_config.strictness},
+                    onSelectionChanged: (s) async {
+                      setState(() => _config.strictness = s.first);
+                      await _config.save();
+                    },
+                  ),
+                  TextField(
+                    controller: _nameCtl,
+                    decoration: InputDecoration(labelText: l.nameLabel),
+                    onChanged: (v) {
+                      _config.name = v.trim();
+                      _config.save();
                     },
                   ),
                   const SizedBox(height: 16),

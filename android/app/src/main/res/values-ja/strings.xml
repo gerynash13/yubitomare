@@ -8,4 +8,11 @@
     <string name="alert_text">まだ%1$sを見てるの？タップしてペットと向き合おう。</string>
     <string name="channel_tracker">見張りの状態</string>
     <string name="channel_alerts">ペットからの警告</string>
+    <string name="overlay_title">ぴとっ。%1$s、いま開いたでしょ？</string>
+    <string name="overlay_title_2">ちょっと、また%1$s？ さっきも見てたでしょ！</string>
+    <string name="overlay_title_3">なにしてるんかい！！！ %1$s、今日もう%2$d回目だよ！</string>
+    <string name="overlay_title_locked">もう終わり！ %1$sは、また明日ね。</string>
+    <string name="overlay_back">戻る</string>
+    <string name="overlay_more">あと%1$d分</string>
+    <string name="overlay_more_wait">あと%1$d分（%2$d）</string>
 </resources>

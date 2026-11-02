@@ -7,6 +7,7 @@ import 'locale_controller.dart';
 import 'memory.dart';
 import 'roast_api.dart';
 import 'storage.dart';
+import 'tracker_config.dart';
 
 class _Msg {
   final String text;
@@ -53,12 +54,15 @@ class _PetScreenState extends State<PetScreen> {
       final l = lookupAppLocalizations(Locale(lang));
       final all = await PetMemory.buildBullets(l, currentApp: widget.app);
       final history = all.isEmpty ? <String>[] : [(all..shuffle()).first];
+      final cfg = await TrackerConfig.load();
       _full = await fetchRoast(
         app: widget.app,
         minutes: widget.minutes,
         task: _task,
         history: history,
         lang: lang,
+        name: cfg.name,
+        strictness: cfg.strictness,
       );
     } catch (_) {
       if (!mounted) return;

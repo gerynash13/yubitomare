@@ -300,4 +300,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sincere4 => 'Tomarin is right here.';
+
+  @override
+  String get strictnessTitle => 'Tomarin\'s strictness';
+
+  @override
+  String get strictnessGentle => 'Gentle';
+
+  @override
+  String get strictnessNormal => 'Normal';
+
+  @override
+  String get strictnessFirm => 'Firm';
+
+  @override
+  String get nameLabel => 'What should Tomarin call you?';
 }
