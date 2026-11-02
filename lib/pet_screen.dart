@@ -62,6 +62,7 @@ class _PetScreenState extends State<PetScreen> {
         history: history,
         lang: lang,
         name: cfg.name,
+        suffix: cfg.suffix,
         strictness: cfg.strictness,
       );
     } catch (_) {

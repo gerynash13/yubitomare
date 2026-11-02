@@ -302,17 +302,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sincere4 => 'Tomarin is right here.';
 
   @override
-  String get strictnessTitle => 'Tomarin\'s strictness';
+  String get callMeTitle => 'What should Tomarin call you?';
 
   @override
-  String get strictnessGentle => 'Gentle';
+  String get callMeHint => 'Your name';
 
   @override
-  String get strictnessNormal => 'Normal';
+  String get suffixSan => '-san';
 
   @override
-  String get strictnessFirm => 'Firm';
+  String get suffixKun => '-kun';
 
   @override
-  String get nameLabel => 'What should Tomarin call you?';
+  String get suffixChan => '-chan';
+
+  @override
+  String get suffixNone => 'None';
+
+  @override
+  String get strictnessTitle => 'How strict should Tomarin be?';
+
+  @override
+  String get strictGentle => 'Gentle';
+
+  @override
+  String get strictNormal => 'Normal';
+
+  @override
+  String get strictFirm => 'Firm';
 }

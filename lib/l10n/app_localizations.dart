@@ -536,35 +536,65 @@ abstract class AppLocalizations {
   /// **'Tomarin is right here.'**
   String get sincere4;
 
-  /// No description provided for @strictnessTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Tomarin\'s strictness'**
-  String get strictnessTitle;
-
-  /// No description provided for @strictnessGentle.
-  ///
-  /// In en, this message translates to:
-  /// **'Gentle'**
-  String get strictnessGentle;
-
-  /// No description provided for @strictnessNormal.
-  ///
-  /// In en, this message translates to:
-  /// **'Normal'**
-  String get strictnessNormal;
-
-  /// No description provided for @strictnessFirm.
-  ///
-  /// In en, this message translates to:
-  /// **'Firm'**
-  String get strictnessFirm;
-
-  /// No description provided for @nameLabel.
+  /// No description provided for @callMeTitle.
   ///
   /// In en, this message translates to:
   /// **'What should Tomarin call you?'**
-  String get nameLabel;
+  String get callMeTitle;
+
+  /// No description provided for @callMeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your name'**
+  String get callMeHint;
+
+  /// No description provided for @suffixSan.
+  ///
+  /// In en, this message translates to:
+  /// **'-san'**
+  String get suffixSan;
+
+  /// No description provided for @suffixKun.
+  ///
+  /// In en, this message translates to:
+  /// **'-kun'**
+  String get suffixKun;
+
+  /// No description provided for @suffixChan.
+  ///
+  /// In en, this message translates to:
+  /// **'-chan'**
+  String get suffixChan;
+
+  /// No description provided for @suffixNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get suffixNone;
+
+  /// No description provided for @strictnessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How strict should Tomarin be?'**
+  String get strictnessTitle;
+
+  /// No description provided for @strictGentle.
+  ///
+  /// In en, this message translates to:
+  /// **'Gentle'**
+  String get strictGentle;
+
+  /// No description provided for @strictNormal.
+  ///
+  /// In en, this message translates to:
+  /// **'Normal'**
+  String get strictNormal;
+
+  /// No description provided for @strictFirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Firm'**
+  String get strictFirm;
 }
 
 class _AppLocalizationsDelegate

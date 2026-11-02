@@ -73,9 +73,14 @@
   "sincere2": "ずっとしんどいときは、とまりんだけで抱えなくていいよ。家族や友だち、先生、信頼できる人に、ひとことだけでも話してみてほしいな。",
   "sincere3": "話しにくいときは、無料の電話相談もあるよ。よりそいホットライン（0120-279-338）は24時間つながるよ。「消えたい」って気持ちのときは、#いのちSOS（0120-061-338）もあるよ。",
   "sincere4": "とまりんは、ここにいるよ。",
+  "callMeTitle": "とまりんに、なんて呼ばれたい？",
+  "callMeHint": "あなたの名前",
+  "suffixSan": "さん",
+  "suffixKun": "くん",
+  "suffixChan": "ちゃん",
+  "suffixNone": "なし",
   "strictnessTitle": "とまりんの厳しさ",
-  "strictnessGentle": "やさしめ",
-  "strictnessNormal": "ふつう",
-  "strictnessFirm": "きびしめ",
-  "nameLabel": "とまりんに呼んでほしい名前は?"
+  "strictGentle": "やさしめ",
+  "strictNormal": "ふつう",
+  "strictFirm": "きびしめ"
 }

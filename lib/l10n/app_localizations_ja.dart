@@ -288,17 +288,32 @@ class AppLocalizationsJa extends AppLocalizations {
   String get sincere4 => 'とまりんは、ここにいるよ。';
 
   @override
+  String get callMeTitle => 'とまりんに、なんて呼ばれたい？';
+
+  @override
+  String get callMeHint => 'あなたの名前';
+
+  @override
+  String get suffixSan => 'さん';
+
+  @override
+  String get suffixKun => 'くん';
+
+  @override
+  String get suffixChan => 'ちゃん';
+
+  @override
+  String get suffixNone => 'なし';
+
+  @override
   String get strictnessTitle => 'とまりんの厳しさ';
 
   @override
-  String get strictnessGentle => 'やさしめ';
+  String get strictGentle => 'やさしめ';
 
   @override
-  String get strictnessNormal => 'ふつう';
+  String get strictNormal => 'ふつう';
 
   @override
-  String get strictnessFirm => 'きびしめ';
-
-  @override
-  String get nameLabel => 'とまりんに呼んでほしい名前は?';
+  String get strictFirm => 'きびしめ';
 }

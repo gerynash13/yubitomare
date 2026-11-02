@@ -51,13 +51,26 @@ class _SpikePageState extends State<SpikePage> with WidgetsBindingObserver {
 
   final _taskCtl = TextEditingController(text: 'Math homework');
   String _roast = '';
+  int _testLevel = 0;
 
-  Future<void> _testRoast() async {
-    setState(() => _roast = 'Thinking up something mean...');
+    Future<void> _testRoast() async {
+    final level = _testLevel; // 0-2 = passes used, 3 = locked
+    _testLevel = (_testLevel + 1) % 4;
+    setState(() => _roast = 'Level $level ...');
     try {
+      final cfg = await TrackerConfig.load();
       final r = await fetchRoast(
-        app: 'Youtube', minutes: 15, task: _taskCtl.text);
-        setState(() => _roast = r);
+        app: 'YouTube',
+        minutes: 0,
+        task: _taskCtl.text,
+        lang: await effectiveLanguage(),
+        name: cfg.name,
+        suffix: cfg.suffix,
+        strictness: cfg.strictness,
+        level: level == 3 ? 2 : level,
+        locked: level == 3,
+      );
+      setState(() => _roast = 'Level $level (${cfg.strictness}): $r');
     } catch (e) {
       setState(() => _roast = 'Error: $e');
     }

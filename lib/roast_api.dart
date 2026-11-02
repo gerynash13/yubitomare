@@ -1,38 +1,46 @@
-   import 'dart:convert';
-   import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
-   const supabaseUrl = 'https://huvqnnmcfkinlxlhatav.supabase.co';
-   const supabaseAnonKey = 'sb_publishable_XomYTCiO08-McfoLcPF7iQ_0ckM7Lv7';
+const supabaseUrl = 'https://huvqnnmcfkinlxlhatav.supabase.co';
+const supabaseAnonKey = 'sb_publishable_XomYTCiO08-McfoLcPF7iQ_0ckM7Lv7';
 
-   Future<String> fetchRoast({
-    required String app,
-    required int minutes,
-    String? task,
-    String? title,
-    List<String>? history,
-    String lang = 'en',
-    String? name,
-    String strictness = 'gentle',
-  }) async {
-    final res = await http.post(
-      Uri.parse('$supabaseUrl/functions/v1/intervene'),
-      headers: {
-        'Authorization': 'Bearer $supabaseAnonKey',
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'app': app,
-        'minutes': minutes,
-        'task': task,
-        'title': title,
-        'history': history ?? [],
-        'lang': lang,
-        'name': name,
-        'strictness': strictness,
-      }),
-    );
-    if (res.statusCode != 200) {
-      throw Exception('Roast failed: ${res.statusCode} ${res.body}');
-    }
-    return (jsonDecode(res.body) as Map)['roast'] as String;
+/// Asks the intervene function for one line from Tomarin.
+///
+/// [level] = how many passes the user already used today (0, 1, 2...).
+/// [locked] = the daily budget is gone and the card is a final "closed for today".
+Future<String> fetchRoast({
+  required String app,
+  required int minutes,
+  String? task,
+  List<String>? history,
+  String lang = 'en',
+  String name = '',
+  String suffix = 'none',
+  String strictness = 'normal',
+  int level = 0,
+  bool locked = false,
+}) async {
+  final res = await http.post(
+    Uri.parse('$supabaseUrl/functions/v1/intervene'),
+    headers: {
+      'Authorization': 'Bearer $supabaseAnonKey',
+      'Content-Type': 'application/json',
+    },
+    body: jsonEncode({
+      'app': app,
+      'minutes': minutes,
+      'task': task,
+      'history': history ?? [],
+      'lang': lang,
+      'name': name,
+      'suffix': suffix,
+      'strictness': strictness,
+      'level': level,
+      'locked': locked,
+    }),
+  );
+  if (res.statusCode != 200) {
+    throw Exception('Roast failed: ${res.statusCode} ${res.body}');
   }
+  return (jsonDecode(res.body) as Map)['roast'] as String;
+}

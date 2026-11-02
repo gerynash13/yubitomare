@@ -32,6 +32,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _config = cfg;
       _installed = list ?? [];
       _loading = false;
+      _nameCtl.text = cfg.name;
     });
   }
 
@@ -83,25 +84,41 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
+                                    Text(l.callMeTitle, style: Theme.of(context).textTheme.titleMedium),
+                  TextField(
+                    controller: _nameCtl,
+                    decoration: InputDecoration(hintText: l.callMeHint),
+                    onChanged: (v) {
+                      _config.name = v;
+                      _config.save();
+                    },
+                  ),
+                  const SizedBox(height: 8),
+                  SegmentedButton<String>(
+                    segments: [
+                      ButtonSegment(value: 'san', label: Text(l.suffixSan)),
+                      ButtonSegment(value: 'kun', label: Text(l.suffixKun)),
+                      ButtonSegment(value: 'chan', label: Text(l.suffixChan)),
+                      ButtonSegment(value: 'none', label: Text(l.suffixNone)),
+                    ],
+                    selected: {_config.suffix},
+                    onSelectionChanged: (s) async {
+                      setState(() => _config.suffix = s.first);
+                      await _config.save();
+                    },
+                  ),
+                  const SizedBox(height: 16),
                   Text(l.strictnessTitle, style: Theme.of(context).textTheme.titleMedium),
                   SegmentedButton<String>(
                     segments: [
-                      ButtonSegment(value: 'gentle', label: Text(l.strictnessGentle)),
-                      ButtonSegment(value: 'normal', label: Text(l.strictnessNormal)),
-                      ButtonSegment(value: 'firm', label: Text(l.strictnessFirm)),
+                      ButtonSegment(value: 'gentle', label: Text(l.strictGentle)),
+                      ButtonSegment(value: 'normal', label: Text(l.strictNormal)),
+                      ButtonSegment(value: 'firm', label: Text(l.strictFirm)),
                     ],
                     selected: {_config.strictness},
                     onSelectionChanged: (s) async {
                       setState(() => _config.strictness = s.first);
                       await _config.save();
-                    },
-                  ),
-                  TextField(
-                    controller: _nameCtl,
-                    decoration: InputDecoration(labelText: l.nameLabel),
-                    onChanged: (v) {
-                      _config.name = v.trim();
-                      _config.save();
                     },
                   ),
                   const SizedBox(height: 16),
