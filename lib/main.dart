@@ -66,11 +66,10 @@ class _SpikePageState extends State<SpikePage> with WidgetsBindingObserver {
         lang: await effectiveLanguage(),
         name: cfg.name,
         suffix: cfg.suffix,
-        strictness: cfg.strictness,
         level: level == 3 ? 2 : level,
         locked: level == 3,
       );
-      setState(() => _roast = 'Level $level (${cfg.strictness}): $r');
+      setState(() => _roast = 'Level $level: $r');
     } catch (e) {
       setState(() => _roast = 'Error: $e');
     }

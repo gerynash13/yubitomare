@@ -108,20 +108,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
-                  Text(l.strictnessTitle, style: Theme.of(context).textTheme.titleMedium),
-                  SegmentedButton<String>(
-                    segments: [
-                      ButtonSegment(value: 'gentle', label: Text(l.strictGentle)),
-                      ButtonSegment(value: 'normal', label: Text(l.strictNormal)),
-                      ButtonSegment(value: 'firm', label: Text(l.strictFirm)),
-                    ],
-                    selected: {_config.strictness},
-                    onSelectionChanged: (s) async {
-                      setState(() => _config.strictness = s.first);
-                      await _config.save();
-                    },
-                  ),
-                  const SizedBox(height: 16),
                   Text(l.alertAfter(_config.thresholdMinutes),
                       style: Theme.of(context).textTheme.titleMedium),
                   Slider(

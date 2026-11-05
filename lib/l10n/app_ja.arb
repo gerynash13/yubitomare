@@ -78,9 +78,5 @@
   "suffixSan": "さん",
   "suffixKun": "くん",
   "suffixChan": "ちゃん",
-  "suffixNone": "なし",
-  "strictnessTitle": "とまりんの厳しさ",
-  "strictGentle": "やさしめ",
-  "strictNormal": "ふつう",
-  "strictFirm": "きびしめ"
+  "suffixNone": "なし"
 }

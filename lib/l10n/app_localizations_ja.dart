@@ -304,16 +304,4 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get suffixNone => 'なし';
-
-  @override
-  String get strictnessTitle => 'とまりんの厳しさ';
-
-  @override
-  String get strictGentle => 'やさしめ';
-
-  @override
-  String get strictNormal => 'ふつう';
-
-  @override
-  String get strictFirm => 'きびしめ';
 }

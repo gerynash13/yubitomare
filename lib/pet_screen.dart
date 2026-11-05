@@ -63,7 +63,6 @@ class _PetScreenState extends State<PetScreen> {
         lang: lang,
         name: cfg.name,
         suffix: cfg.suffix,
-        strictness: cfg.strictness,
       );
     } catch (_) {
       if (!mounted) return;

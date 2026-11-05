@@ -318,16 +318,4 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get suffixNone => 'None';
-
-  @override
-  String get strictnessTitle => 'How strict should Tomarin be?';
-
-  @override
-  String get strictGentle => 'Gentle';
-
-  @override
-  String get strictNormal => 'Normal';
-
-  @override
-  String get strictFirm => 'Firm';
 }

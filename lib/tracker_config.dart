@@ -7,7 +7,6 @@ class TrackerConfig {
   String language; // 'system', 'en' or 'ja'
   String name; // what Tomarin calls the user (can be empty)
   String suffix; // 'san', 'kun', 'chan' or 'none'
-  String strictness; // 'gentle', 'normal' or 'firm'
 
   TrackerConfig({
     this.thresholdMinutes = 15,
@@ -15,7 +14,6 @@ class TrackerConfig {
     this.language = 'system',
     this.name = '',
     this.suffix = 'san',
-    this.strictness = 'normal',
   }) : apps = apps ?? {};
 
   static const _key = 'tracker_config';
@@ -35,7 +33,6 @@ class TrackerConfig {
       language: (j['language'] as String?) ?? 'system',
       name: (j['name'] as String?) ?? '',
       suffix: (j['suffix'] as String?) ?? 'san',
-      strictness: (j['strictness'] as String?) ?? 'normal',
     );
   }
 
@@ -48,7 +45,6 @@ class TrackerConfig {
         'language': language,
         'name': name,
         'suffix': suffix,
-        'strictness': strictness,
         'apps': apps.entries
             .map((e) => {'pkg': e.key, 'name': e.value})
             .toList(),

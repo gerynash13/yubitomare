@@ -571,30 +571,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'None'**
   String get suffixNone;
-
-  /// No description provided for @strictnessTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'How strict should Tomarin be?'**
-  String get strictnessTitle;
-
-  /// No description provided for @strictGentle.
-  ///
-  /// In en, this message translates to:
-  /// **'Gentle'**
-  String get strictGentle;
-
-  /// No description provided for @strictNormal.
-  ///
-  /// In en, this message translates to:
-  /// **'Normal'**
-  String get strictNormal;
-
-  /// No description provided for @strictFirm.
-  ///
-  /// In en, this message translates to:
-  /// **'Firm'**
-  String get strictFirm;
 }
 
 class _AppLocalizationsDelegate

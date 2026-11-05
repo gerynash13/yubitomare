@@ -100,9 +100,5 @@
   "suffixSan": "-san",
   "suffixKun": "-kun",
   "suffixChan": "-chan",
-  "suffixNone": "None",
-  "strictnessTitle": "How strict should Tomarin be?",
-  "strictGentle": "Gentle",
-  "strictNormal": "Normal",
-  "strictFirm": "Firm"
+  "suffixNone": "None"
 }

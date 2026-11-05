@@ -16,7 +16,6 @@ Future<String> fetchRoast({
   String lang = 'en',
   String name = '',
   String suffix = 'none',
-  String strictness = 'normal',
   int level = 0,
   bool locked = false,
 }) async {
@@ -34,7 +33,6 @@ Future<String> fetchRoast({
       'lang': lang,
       'name': name,
       'suffix': suffix,
-      'strictness': strictness,
       'level': level,
       'locked': locked,
     }),
