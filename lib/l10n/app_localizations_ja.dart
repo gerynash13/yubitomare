@@ -304,4 +304,70 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get suffixNone => 'なし';
+
+  @override
+  String get interceptShout0 => 'ぴとっ。';
+
+  @override
+  String interceptSub0(String app) {
+    return '$app、いま開いたでしょ？';
+  }
+
+  @override
+  String interceptShout1(String app) {
+    return 'ちょっと、また$app？';
+  }
+
+  @override
+  String get interceptSub1 => 'さっきも見てたでしょ！';
+
+  @override
+  String get interceptShout2 => 'なにしてるんかい！！！';
+
+  @override
+  String get interceptSub2 => '何度言ったらわかるの？ 今すぐ戻って。';
+
+  @override
+  String get interceptBack => '戻る';
+
+  @override
+  String interceptPass(int minutes) {
+    return 'あと$minutes分';
+  }
+
+  @override
+  String interceptTag(int used, int total) {
+    return '今日の延長 $used/$total';
+  }
+
+  @override
+  String get interceptStamp => '本日\n終了';
+
+  @override
+  String get interceptClosedTitle => 'もう今日はおしまい！';
+
+  @override
+  String interceptClosedBody(String app) {
+    return '$appは、また明日ね。今日はもう十分でしょ。ゆっくり休んでね。';
+  }
+
+  @override
+  String get interceptClosedUsed => '今日の延長';
+
+  @override
+  String interceptClosedUsedValue(int used, int total) {
+    return '$used/$total 使いきりました';
+  }
+
+  @override
+  String get interceptClosedNext => '次の解除';
+
+  @override
+  String get interceptClosedAt => 'あさ6:00';
+
+  @override
+  String get interceptClosedNote => '止まり木で待ってるからね。';
+
+  @override
+  String get interceptHome => 'ホームに戻る';
 }

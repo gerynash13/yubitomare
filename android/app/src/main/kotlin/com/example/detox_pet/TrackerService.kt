@@ -17,6 +17,7 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.provider.Settings
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import org.json.JSONArray
 import org.json.JSONObject
@@ -38,6 +39,10 @@ class TrackerService : Service() {
     companion object {
         // Tune these freely. Set DAILY_PASSES high while testing the lower levels.
         const val DAILY_PASSES = 3
+        const val DAY_STARTS_AT = 6 // the daily pass budget resets at 6:00
+        // true: the card is a Flutter screen (looks like the design).
+        // false: the plain native card from the first spike. Handy if the Flutter card is blocked.
+        const val USE_FLUTTER_INTERCEPT = true
         val PASS_OPTIONS = listOf(5, 10, 15)       // minutes
         val WAIT_SECONDS = listOf(5, 10, 20)       // countdown per level
     }
@@ -56,6 +61,8 @@ class TrackerService : Service() {
     private val passUntil = mutableMapOf<String, Long>() // package -> pass end time
     private var shownApp: String? = null
     private var shownLevel = 0
+    private var flutterIntercept = false   // the Flutter card is up (or starting)
+    private var flutterLaunchedAt = 0L
 
     private val screenReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -187,6 +194,17 @@ class TrackerService : Service() {
         lastQuery = now
 
         val pkg = currentPkg
+
+        // The Flutter card lives in our own app. While it is up, wait for the answer.
+        if (flutterIntercept) {
+            if (pkg == packageName) return
+            if (now - flutterLaunchedAt > 5_000) {
+                Log.w("Tomarin", "The Flutter card did not appear, using the native card")
+                fallBackToNativeCard()
+                return
+            }
+        }
+
         val appName = if (pkg != null) cfg.apps[pkg] else null
         if (appName != null && pkg != null) {
             if (blacklistedSince == null) {
@@ -228,47 +246,121 @@ class TrackerService : Service() {
 
     // ---------- the overlay ----------
 
-    private fun showIntercept(pkg: String, appName: String, capMinutes: Int) {
-        if (!Settings.canDrawOverlays(this)) return
+    private class CardInfo(
+        val used: Int,          // passes already used today
+        val locked: Boolean,    // the daily budget is gone
+        val level: Int,         // 0, 1 or 2: how loud the native card is
+        val options: List<Int>  // pass lengths in minutes (empty when locked)
+    )
 
+    private fun cardInfo(capMinutes: Int): CardInfo {
         val used = passesToday()
         val locked = used >= DAILY_PASSES
-        val level = minOf(used, 2)
-
-        val title = when {
-            locked -> str(R.string.overlay_title_locked, appName)
-            level == 0 -> str(R.string.overlay_title, appName)
-            level == 1 -> str(R.string.overlay_title_2, appName)
-            else -> str(R.string.overlay_title_3, appName, used + 1)
-        }
         // Pass lengths never exceed the length set in Settings (always at least one choice).
         val options = if (locked) {
             emptyList()
         } else {
             PASS_OPTIONS.filter { it <= capMinutes }.ifEmpty { listOf(capMinutes) }
         }
+        return CardInfo(used, locked, minOf(used, 2), options)
+    }
 
+    private fun showIntercept(pkg: String, appName: String, capMinutes: Int) {
+        if (!Settings.canDrawOverlays(this)) return
+        val info = cardInfo(capMinutes)
         visit = Visit.SHOWING
         shownApp = appName
-        shownLevel = used
+        shownLevel = info.used
+        if (USE_FLUTTER_INTERCEPT && launchFlutterCard(pkg, appName, info)) return
+        showNativeCard(pkg, appName, info)
+    }
 
+    // What happens after each answer, shared by both kinds of card.
+    private fun answerBack(appName: String, used: Int) {
+        logIntercept(appName, "back", used, 0)
+        visit = Visit.SENT_HOME
+    }
+
+    private fun answerPass(pkg: String, appName: String, used: Int, minutes: Int) {
+        logIntercept(appName, "pass", used, minutes)
+        passUntil[pkg] = System.currentTimeMillis() + minutes * 60_000L
+        visit = Visit.PASSED
+    }
+
+    private fun answerLeft(appName: String, used: Int) {
+        logIntercept(appName, "left", used, 0)
+        visit = Visit.NEW
+    }
+
+    /** Opens MainActivity over the guarded app, where Flutter draws the card. */
+    private fun launchFlutterCard(pkg: String, appName: String, info: CardInfo): Boolean {
+        InterceptBridge.onResult = { action, minutes ->
+            flutterIntercept = false
+            when (action) {
+                "back" -> answerBack(appName, info.used)
+                "pass" -> answerPass(pkg, appName, info.used, minutes)
+                else -> answerLeft(appName, info.used)
+            }
+        }
+        flutterIntercept = true
+        flutterLaunchedAt = System.currentTimeMillis()
+        return try {
+            startActivity(
+                Intent(this, MainActivity::class.java)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                    .putExtra("intercept_app", appName)
+                    .putExtra("intercept_level", info.used)
+                    .putExtra("intercept_total", DAILY_PASSES)
+                    .putExtra("intercept_locked", info.locked)
+                    .putExtra("intercept_options", info.options.toIntArray())
+            )
+            true
+        } catch (e: Exception) {
+            Log.w("Tomarin", "Could not start the Flutter card", e)
+            flutterIntercept = false
+            InterceptBridge.onResult = null
+            false
+        }
+    }
+
+    /** The Flutter card never showed up (the phone blocked it). Show the plain card instead. */
+    private fun fallBackToNativeCard() {
+        InterceptBridge.onResult = null
+        flutterIntercept = false
+        val cfg = loadConfig()
+        val pkg = currentPkg
+        val appName = if (pkg != null) cfg.apps[pkg] else null
+        if (pkg != null && appName != null) {
+            val info = cardInfo((cfg.thresholdMs / 60_000L).toInt())
+            visit = Visit.SHOWING
+            shownApp = appName
+            shownLevel = info.used
+            showNativeCard(pkg, appName, info)
+        } else {
+            visit = Visit.NEW
+        }
+    }
+
+    /** The plain card drawn with native views (first spike). */
+    private fun showNativeCard(pkg: String, appName: String, info: CardInfo) {
+        val title = when {
+            info.locked -> str(R.string.overlay_title_locked, appName)
+            info.level == 0 -> str(R.string.overlay_title, appName)
+            info.level == 1 -> str(R.string.overlay_title_2, appName)
+            else -> str(R.string.overlay_title_3, appName, info.used + 1)
+        }
         overlay.show(
             title = title,
             backLabel = str(R.string.overlay_back),
-            options = options,
+            options = info.options,
             optionLabel = { m -> str(R.string.overlay_more, m) },
             optionWaitLabel = { m, s -> str(R.string.overlay_more_wait, m, s) },
-            waitSeconds = WAIT_SECONDS[level],
+            waitSeconds = WAIT_SECONDS[info.level],
             onBack = {
-                logIntercept(appName, "back", used, 0)
-                visit = Visit.SENT_HOME
+                answerBack(appName, info.used)
                 goHome()
             },
-            onPass = { m ->
-                logIntercept(appName, "pass", used, m)
-                passUntil[pkg] = System.currentTimeMillis() + m * 60_000L
-                visit = Visit.PASSED
-            }
+            onPass = { m -> answerPass(pkg, appName, info.used, m) }
         )
     }
 
@@ -319,12 +411,14 @@ class TrackerService : Service() {
     }
 
     private fun passesToday(): Int {
+        // "Today" starts at 6:00 in the morning, so scrolling at 23:50 does not get fresh passes at midnight.
         val cal = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.HOUR_OF_DAY, DAY_STARTS_AT)
             set(Calendar.MINUTE, 0)
             set(Calendar.SECOND, 0)
             set(Calendar.MILLISECOND, 0)
         }
+        if (cal.timeInMillis > System.currentTimeMillis()) cal.add(Calendar.DAY_OF_MONTH, -1)
         val start = cal.timeInMillis
         val arr = readLog()
         var n = 0

@@ -571,6 +571,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'None'**
   String get suffixNone;
+
+  /// No description provided for @interceptShout0.
+  ///
+  /// In en, this message translates to:
+  /// **'Peck.'**
+  String get interceptShout0;
+
+  /// No description provided for @interceptSub0.
+  ///
+  /// In en, this message translates to:
+  /// **'You just opened {app}, right?'**
+  String interceptSub0(String app);
+
+  /// No description provided for @interceptShout1.
+  ///
+  /// In en, this message translates to:
+  /// **'Hey, {app} again?'**
+  String interceptShout1(String app);
+
+  /// No description provided for @interceptSub1.
+  ///
+  /// In en, this message translates to:
+  /// **'You were just on it!'**
+  String get interceptSub1;
+
+  /// No description provided for @interceptShout2.
+  ///
+  /// In en, this message translates to:
+  /// **'What are you DOING?!'**
+  String get interceptShout2;
+
+  /// No description provided for @interceptSub2.
+  ///
+  /// In en, this message translates to:
+  /// **'How many times do I have to say it? Go back now.'**
+  String get interceptSub2;
+
+  /// No description provided for @interceptBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Go back'**
+  String get interceptBack;
+
+  /// No description provided for @interceptPass.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} more min'**
+  String interceptPass(int minutes);
+
+  /// No description provided for @interceptTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Extensions today {used}/{total}'**
+  String interceptTag(int used, int total);
+
+  /// No description provided for @interceptStamp.
+  ///
+  /// In en, this message translates to:
+  /// **'DONE\nTODAY'**
+  String get interceptStamp;
+
+  /// No description provided for @interceptClosedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'That is it for today!'**
+  String get interceptClosedTitle;
+
+  /// No description provided for @interceptClosedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{app} is closed until tomorrow. You have had enough for today, so rest well.'**
+  String interceptClosedBody(String app);
+
+  /// No description provided for @interceptClosedUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'Extensions today'**
+  String get interceptClosedUsed;
+
+  /// No description provided for @interceptClosedUsedValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{used}/{total} used up'**
+  String interceptClosedUsedValue(int used, int total);
+
+  /// No description provided for @interceptClosedNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlocks'**
+  String get interceptClosedNext;
+
+  /// No description provided for @interceptClosedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'6:00 AM'**
+  String get interceptClosedAt;
+
+  /// No description provided for @interceptClosedNote.
+  ///
+  /// In en, this message translates to:
+  /// **'I will be waiting on the perch.'**
+  String get interceptClosedNote;
+
+  /// No description provided for @interceptHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to home'**
+  String get interceptHome;
 }
 
 class _AppLocalizationsDelegate

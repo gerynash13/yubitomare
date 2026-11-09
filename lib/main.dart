@@ -10,6 +10,8 @@ import 'tracker_config.dart';
 import 'locale_controller.dart';
 import 'bond.dart';
 import 'focus_screen.dart';
+import 'ui/theme.dart';
+import 'ui/intercept_screen.dart';
 
 final navKey = GlobalKey<NavigatorState>();
 
@@ -30,6 +32,7 @@ class DetoxApp extends StatelessWidget {
       builder: (_, locale, _) => MaterialApp(
         navigatorKey: navKey,
         locale: locale,
+        theme: buildTheme(),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: const SpikePage(),
@@ -52,8 +55,9 @@ class _SpikePageState extends State<SpikePage> with WidgetsBindingObserver {
   final _taskCtl = TextEditingController(text: 'Math homework');
   String _roast = '';
   int _testLevel = 0;
+  int _previewStep = 0;
 
-    Future<void> _testRoast() async {
+  Future<void> _testRoast() async {
     final level = _testLevel; // 0-2 = passes used, 3 = locked
     _testLevel = (_testLevel + 1) % 4;
     setState(() => _roast = 'Level $level ...');
@@ -73,6 +77,25 @@ class _SpikePageState extends State<SpikePage> with WidgetsBindingObserver {
     } catch (e) {
       setState(() => _roast = 'Error: $e');
     }
+  }
+
+  void _previewIntercept() {
+    final nav = navKey.currentState;
+    if (nav == null) return;
+    final step = _previewStep;
+    _previewStep = (_previewStep + 1) % 4; // 0, 1, 2 = passes used, 3 = closed for today
+    nav.push(MaterialPageRoute(
+      builder: (_) => InterceptScreen(
+        app: 'YouTube',
+        level: step,
+        total: 3,
+        locked: step == 3,
+        passOptions: const [5, 10, 15],
+        onBack: () => nav.pop(),
+        onPass: (_) => nav.pop(),
+        onLeft: () => nav.pop(),
+      ),
+    ));
   }
 
   Future<void> _checkAccess() async {
@@ -151,6 +174,9 @@ class _SpikePageState extends State<SpikePage> with WidgetsBindingObserver {
                 onPressed: () => _channel.invokeMethod('openOverlaySettings'),
                 child: const Text('Overlay permission'),
               ),
+              ElevatedButton(
+                onPressed: _previewIntercept, child: const Text('Preview intercept')
+              ),
             ]),
             TextField(
               controller: _taskCtl,
@@ -175,6 +201,7 @@ class _SpikePageState extends State<SpikePage> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _checkPendingAlert();
+    _checkPendingIntercept();
   }
 
   @override
@@ -189,6 +216,7 @@ class _SpikePageState extends State<SpikePage> with WidgetsBindingObserver {
     if (state == AppLifecycleState.resumed) {
       setState(() {});
       _checkPendingAlert();
+      _checkPendingIntercept();
     }
   }
 
@@ -224,5 +252,30 @@ class _SpikePageState extends State<SpikePage> with WidgetsBindingObserver {
         ],
       ),
     );
+  }
+
+    Future<void> _checkPendingIntercept() async {
+    final r = await _channel.invokeMapMethod<String, dynamic>('getPendingIntercept');
+    if (r == null) return;
+    final nav = navKey.currentState;
+    if (nav == null) return;
+
+    Future<void> answer(String action, int minutes) async {
+      await _channel.invokeMethod('interceptDone', {'action': action, 'minutes': minutes});
+      nav.pop();
+    }
+
+    await nav.push(MaterialPageRoute(
+      builder: (_) => InterceptScreen(
+        app: r['app'] as String,
+        level: (r['level'] as num).toInt(),
+        total: (r['total'] as num).toInt(),
+        locked: r['locked'] as bool,
+        passOptions: (r['options'] as List).map((e) => (e as num).toInt()).toList(),
+        onBack: () => answer('back', 0),
+        onPass: (m) => answer('pass', m),
+        onLeft: () => answer('left', 0),
+      ),
+    ));
   }
 }

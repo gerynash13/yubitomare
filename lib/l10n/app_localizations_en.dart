@@ -318,4 +318,71 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get suffixNone => 'None';
+
+  @override
+  String get interceptShout0 => 'Peck.';
+
+  @override
+  String interceptSub0(String app) {
+    return 'You just opened $app, right?';
+  }
+
+  @override
+  String interceptShout1(String app) {
+    return 'Hey, $app again?';
+  }
+
+  @override
+  String get interceptSub1 => 'You were just on it!';
+
+  @override
+  String get interceptShout2 => 'What are you DOING?!';
+
+  @override
+  String get interceptSub2 =>
+      'How many times do I have to say it? Go back now.';
+
+  @override
+  String get interceptBack => 'Go back';
+
+  @override
+  String interceptPass(int minutes) {
+    return '$minutes more min';
+  }
+
+  @override
+  String interceptTag(int used, int total) {
+    return 'Extensions today $used/$total';
+  }
+
+  @override
+  String get interceptStamp => 'DONE\nTODAY';
+
+  @override
+  String get interceptClosedTitle => 'That is it for today!';
+
+  @override
+  String interceptClosedBody(String app) {
+    return '$app is closed until tomorrow. You have had enough for today, so rest well.';
+  }
+
+  @override
+  String get interceptClosedUsed => 'Extensions today';
+
+  @override
+  String interceptClosedUsedValue(int used, int total) {
+    return '$used/$total used up';
+  }
+
+  @override
+  String get interceptClosedNext => 'Unlocks';
+
+  @override
+  String get interceptClosedAt => '6:00 AM';
+
+  @override
+  String get interceptClosedNote => 'I will be waiting on the perch.';
+
+  @override
+  String get interceptHome => 'Back to home';
 }

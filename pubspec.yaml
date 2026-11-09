@@ -40,6 +40,7 @@ dependencies:
     sdk: flutter
   intl: any
   wakelock_plus: ^1.8.1
+  google_fonts: ^9.0.0
 
 dev_dependencies:
   flutter_test:
@@ -58,11 +59,9 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
   generate: true
-
-  # The following line ensures that the Material Icons font is
-  # included with your application, so that you can use the icons in
-  # the material Icons class.
   uses-material-design: true
+  assets:
+    - assets/tomarin/tomarin_sprites/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

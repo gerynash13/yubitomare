@@ -1,28 +1,29 @@
 package com.example.detox_pet
 
+import android.Manifest
 import android.app.AppOpsManager
 import android.app.usage.UsageEvents
 import android.app.usage.UsageStatsManager
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import android.os.Bundle
 import android.os.Process
 import android.provider.Settings
+import androidx.core.content.ContextCompat
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import android.Manifest
-import android.os.Build
-import androidx.core.content.ContextCompat
-import android.os.Bundle
-import android.net.Uri
 
 class MainActivity : FlutterActivity() {
     private val channelName = "detox_pet/usage"
 
     private var pendingAlert: Map<String, Any>? = null
+    private var pendingIntercept: Map<String, Any>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         captureAlert(intent)
@@ -36,10 +37,34 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun captureAlert(intent: Intent?) {
-        val app = intent?.getStringExtra("alert_app") ?: return
+        if (intent == null) return
+
+        // A request from TrackerService to show the intercept card (drawn by Flutter).
+        val interceptApp = intent.getStringExtra("intercept_app")
+        if (interceptApp != null) {
+            pendingIntercept = mapOf(
+                "app" to interceptApp,
+                "level" to intent.getIntExtra("intercept_level", 0),
+                "total" to intent.getIntExtra("intercept_total", 3),
+                "locked" to intent.getBooleanExtra("intercept_locked", false),
+                "options" to (intent.getIntArrayExtra("intercept_options")?.toList() ?: listOf(5, 10, 15))
+            )
+            intent.removeExtra("intercept_app") // So it can't fire twice
+        }
+
+        // The older notification alert.
+        val app = intent.getStringExtra("alert_app") ?: return
         val minutes = intent.getLongExtra("alert_minutes", 0L)
         pendingAlert = mapOf("app" to app, "minutes" to minutes)
         intent.removeExtra("alert_app") // So it can't fire twice
+    }
+
+    private fun goHome() {
+        startActivity(
+            Intent(Intent.ACTION_MAIN)
+                .addCategory(Intent.CATEGORY_HOME)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        )
     }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
@@ -50,6 +75,13 @@ class MainActivity : FlutterActivity() {
                     "hasUsageAccess" -> result.success(hasUsageAccess())
                     "openUsageSettings" -> {
                         startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
+                        result.success(null)
+                    }
+                    "hasOverlayPermission" -> result.success(Settings.canDrawOverlays(this))
+                    "openOverlaySettings" -> {
+                        startActivity(
+                            Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
+                        )
                         result.success(null)
                     }
                     "getRecentEvents" -> result.success(getRecentEvents())
@@ -71,11 +103,19 @@ class MainActivity : FlutterActivity() {
                         result.success(pendingAlert)
                         pendingAlert = null
                     }
-                    "hasOverlayPermission" -> result.success(Settings.canDrawOverlays(this))
-                    "openOverlaySettings" -> {
-                        startActivity(
-                            Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
-                        )
+                    "getPendingIntercept" -> {
+                        result.success(pendingIntercept)
+                        pendingIntercept = null
+                    }
+                    "interceptDone" -> {
+                        // The user answered the card: "back", "pass" or "left".
+                        val action = call.argument<String>("action") ?: "left"
+                        val minutes = call.argument<Int>("minutes") ?: 0
+                        InterceptBridge.complete(action, minutes)
+                        when (action) {
+                            "back" -> goHome()                // leave the guarded app
+                            "pass" -> moveTaskToBack(true)    // show the guarded app again
+                        }
                         result.success(null)
                     }
                     "getInstalledApps" -> {
