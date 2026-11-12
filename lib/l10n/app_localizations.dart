@@ -679,6 +679,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Back to home'**
   String get interceptHome;
+
+  /// No description provided for @negTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Excuse time · {minutes} min negotiation'**
+  String negTag(int minutes);
+
+  /// No description provided for @negQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} more minutes, huh... so, why do you want them?'**
+  String negQuestion(int minutes);
+
+  /// No description provided for @negSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell me honestly and I will watch over you for {minutes} minutes.'**
+  String negSub(int minutes);
+
+  /// No description provided for @negHmm.
+  ///
+  /// In en, this message translates to:
+  /// **'Hmm...'**
+  String get negHmm;
+
+  /// No description provided for @negStatusWaiting.
+  ///
+  /// In en, this message translates to:
+  /// **'Sizing you up: not convinced yet'**
+  String get negStatusWaiting;
+
+  /// No description provided for @negStatusDone.
+  ///
+  /// In en, this message translates to:
+  /// **'...Oh, all right.'**
+  String get negStatusDone;
+
+  /// No description provided for @negReasonTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'One honest reason'**
+  String get negReasonTitle;
+
+  /// No description provided for @negRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get negRequired;
+
+  /// No description provided for @negLater.
+  ///
+  /// In en, this message translates to:
+  /// **'We will look back on it later'**
+  String get negLater;
+
+  /// No description provided for @negSubTired.
+  ///
+  /// In en, this message translates to:
+  /// **'Needed a breather'**
+  String get negSubTired;
+
+  /// No description provided for @negSubBored.
+  ///
+  /// In en, this message translates to:
+  /// **'Had nothing to do'**
+  String get negSubBored;
+
+  /// No description provided for @negSubAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Tapped without thinking'**
+  String get negSubAuto;
+
+  /// No description provided for @negSubNotif.
+  ///
+  /// In en, this message translates to:
+  /// **'Only meant to reply'**
+  String get negSubNotif;
+
+  /// No description provided for @negPromise.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min only, I promise'**
+  String negPromise(int minutes);
+
+  /// No description provided for @negPinky.
+  ///
+  /// In en, this message translates to:
+  /// **'Pinky promise'**
+  String get negPinky;
+
+  /// No description provided for @negBackOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Actually, I will go back (close the screen)'**
+  String get negBackOut;
+
+  /// No description provided for @negFootnote.
+  ///
+  /// In en, this message translates to:
+  /// **'* After {minutes} minutes I will land on the screen again.'**
+  String negFootnote(int minutes);
+
+  /// No description provided for @crisisTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'When things are hard'**
+  String get crisisTitle;
+
+  /// No description provided for @crisisHotline1.
+  ///
+  /// In en, this message translates to:
+  /// **'Yorisoi Hotline'**
+  String get crisisHotline1;
+
+  /// No description provided for @crisisHotline2.
+  ///
+  /// In en, this message translates to:
+  /// **'#Inochi SOS'**
+  String get crisisHotline2;
+
+  /// No description provided for @crisisFree24.
+  ///
+  /// In en, this message translates to:
+  /// **'Free · 24 hours'**
+  String get crisisFree24;
+
+  /// No description provided for @crisisFree24Sos.
+  ///
+  /// In en, this message translates to:
+  /// **'Free · 24 hours (also when you feel like disappearing)'**
+  String get crisisFree24Sos;
+
+  /// No description provided for @crisisCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get crisisCall;
+
+  /// No description provided for @crisisOk.
+  ///
+  /// In en, this message translates to:
+  /// **'I am okay for now'**
+  String get crisisOk;
 }
 
 class _AppLocalizationsDelegate

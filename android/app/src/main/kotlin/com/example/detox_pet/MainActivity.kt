@@ -11,6 +11,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Process
 import android.provider.Settings
+import android.util.Log
 import androidx.core.content.ContextCompat
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -26,14 +27,21 @@ class MainActivity : FlutterActivity() {
     private var pendingIntercept: Map<String, Any>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d("Tomarin", "MainActivity onCreate (card request: ${intent?.getStringExtra("intercept_app")})")
         captureAlert(intent)
         super.onCreate(savedInstanceState)
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        Log.d("Tomarin", "MainActivity onNewIntent (card request: ${intent.getStringExtra("intercept_app")})")
         setIntent(intent)
         captureAlert(intent)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("Tomarin", "MainActivity onResume")
     }
 
     private fun captureAlert(intent: Intent?) {
@@ -111,11 +119,21 @@ class MainActivity : FlutterActivity() {
                         // The user answered the card: "back", "pass" or "left".
                         val action = call.argument<String>("action") ?: "left"
                         val minutes = call.argument<Int>("minutes") ?: 0
-                        InterceptBridge.complete(action, minutes)
+                        val reason = call.argument<String>("reason")
+                        InterceptBridge.complete(action, minutes, reason)
                         when (action) {
                             "back" -> goHome()                // leave the guarded app
                             "pass" -> moveTaskToBack(true)    // show the guarded app again
                         }
+                        result.success(null)
+                    }
+                    "dial" -> {
+                        // Opens the phone app with the number filled in. The user presses call.
+                        val number = call.argument<String>("number") ?: ""
+                        startActivity(
+                            Intent(Intent.ACTION_DIAL, Uri.parse("tel:$number"))
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        )
                         result.success(null)
                     }
                     "getInstalledApps" -> {

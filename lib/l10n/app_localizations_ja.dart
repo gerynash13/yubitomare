@@ -370,4 +370,86 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get interceptHome => 'ホームに戻る';
+
+  @override
+  String negTag(int minutes) {
+    return '言い訳タイム・$minutes分の交渉';
+  }
+
+  @override
+  String negQuestion(int minutes) {
+    return 'あと$minutes分ね。……で、なんで延長したいの？';
+  }
+
+  @override
+  String negSub(int minutes) {
+    return 'ちゃんと言えたら、$minutes分だけ見守ってあげる。';
+  }
+
+  @override
+  String get negHmm => 'ふむ…';
+
+  @override
+  String get negStatusWaiting => '見定め中：まだ納得していません';
+
+  @override
+  String get negStatusDone => '……しょうがないなぁ。';
+
+  @override
+  String get negReasonTitle => '正直な理由をひとつ';
+
+  @override
+  String get negRequired => '必須';
+
+  @override
+  String get negLater => 'あとで振り返ります';
+
+  @override
+  String get negSubTired => 'ひと息つきたかった';
+
+  @override
+  String get negSubBored => '手持ち無沙汰で…';
+
+  @override
+  String get negSubAuto => '無意識にタップした';
+
+  @override
+  String get negSubNotif => '返信だけのはずが';
+
+  @override
+  String negPromise(int minutes) {
+    return '$minutes分だけ、約束する';
+  }
+
+  @override
+  String get negPinky => '指切り';
+
+  @override
+  String get negBackOut => 'やっぱり戻る（画面を閉じる）';
+
+  @override
+  String negFootnote(int minutes) {
+    return '※ $minutes分経ったら、また画面にとまりに来るからね';
+  }
+
+  @override
+  String get crisisTitle => 'つらいときは';
+
+  @override
+  String get crisisHotline1 => 'よりそいホットライン';
+
+  @override
+  String get crisisHotline2 => '#いのちSOS';
+
+  @override
+  String get crisisFree24 => '無料・24時間';
+
+  @override
+  String get crisisFree24Sos => '無料・24時間（「消えたい」ときにも）';
+
+  @override
+  String get crisisCall => '電話をかける';
+
+  @override
+  String get crisisOk => 'いまはだいじょうぶ';
 }

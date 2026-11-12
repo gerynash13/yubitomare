@@ -5,13 +5,13 @@ package com.example.detox_pet
  * Both run in the same app process, so this tiny object passes the user's answer across.
  */
 object InterceptBridge {
-    /** Set by TrackerService when it opens the card. Called once with "back", "pass" or "left". */
+    /** Set by TrackerService when it opens the card. Called once with "back", "pass" or "left" (and the reason, for a pass). */
     @Volatile
-    var onResult: ((String, Int) -> Unit)? = null
+    var onResult: ((String, Int, String?) -> Unit)? = null
 
-    fun complete(action: String, minutes: Int) {
+    fun complete(action: String, minutes: Int, reason: String?) {
         val callback = onResult
         onResult = null
-        callback?.invoke(action, minutes)
+        callback?.invoke(action, minutes, reason)
     }
 }

@@ -385,4 +385,87 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get interceptHome => 'Back to home';
+
+  @override
+  String negTag(int minutes) {
+    return 'Excuse time · $minutes min negotiation';
+  }
+
+  @override
+  String negQuestion(int minutes) {
+    return '$minutes more minutes, huh... so, why do you want them?';
+  }
+
+  @override
+  String negSub(int minutes) {
+    return 'Tell me honestly and I will watch over you for $minutes minutes.';
+  }
+
+  @override
+  String get negHmm => 'Hmm...';
+
+  @override
+  String get negStatusWaiting => 'Sizing you up: not convinced yet';
+
+  @override
+  String get negStatusDone => '...Oh, all right.';
+
+  @override
+  String get negReasonTitle => 'One honest reason';
+
+  @override
+  String get negRequired => 'Required';
+
+  @override
+  String get negLater => 'We will look back on it later';
+
+  @override
+  String get negSubTired => 'Needed a breather';
+
+  @override
+  String get negSubBored => 'Had nothing to do';
+
+  @override
+  String get negSubAuto => 'Tapped without thinking';
+
+  @override
+  String get negSubNotif => 'Only meant to reply';
+
+  @override
+  String negPromise(int minutes) {
+    return '$minutes min only, I promise';
+  }
+
+  @override
+  String get negPinky => 'Pinky promise';
+
+  @override
+  String get negBackOut => 'Actually, I will go back (close the screen)';
+
+  @override
+  String negFootnote(int minutes) {
+    return '* After $minutes minutes I will land on the screen again.';
+  }
+
+  @override
+  String get crisisTitle => 'When things are hard';
+
+  @override
+  String get crisisHotline1 => 'Yorisoi Hotline';
+
+  @override
+  String get crisisHotline2 => '#Inochi SOS';
+
+  @override
+  String get crisisFree24 => 'Free · 24 hours';
+
+  @override
+  String get crisisFree24Sos =>
+      'Free · 24 hours (also when you feel like disappearing)';
+
+  @override
+  String get crisisCall => 'Call';
+
+  @override
+  String get crisisOk => 'I am okay for now';
 }

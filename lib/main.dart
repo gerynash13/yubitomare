@@ -12,6 +12,7 @@ import 'bond.dart';
 import 'focus_screen.dart';
 import 'ui/theme.dart';
 import 'ui/intercept_screen.dart';
+import 'storage.dart';
 
 final navKey = GlobalKey<NavigatorState>();
 
@@ -79,6 +80,46 @@ class _SpikePageState extends State<SpikePage> with WidgetsBindingObserver {
     }
   }
 
+  // Asks the AI for the line under the card headline. Returns null if it takes too long.
+  Future<String?> _aiLine(String app, int level, String shout) async {
+    try {
+      final lang = await effectiveLanguage();
+      final cfg = await TrackerConfig.load();
+      final l = lookupAppLocalizations(Locale(lang));
+      final bullets = await PetMemory.buildBullets(l, currentApp: app);
+      final history = bullets.isEmpty ? <String>[] : [(bullets..shuffle()).first];
+
+      // What the user said the last time they took a pass (within 3 hours).
+      String? lastReason;
+      String? lastApp;
+      final checkins = await Store.loadCheckins();
+      if (checkins.isNotEmpty) {
+        final c = checkins.last;
+        final age = DateTime.now().millisecondsSinceEpoch - (c['t'] as int);
+        if (age < 3 * 60 * 60 * 1000) {
+          lastReason = c['reason'] as String;
+          lastApp = c['app'] as String;
+        }
+      }
+
+      return await fetchRoast(
+        app: app,
+        minutes: 0,
+        task: await Store.nextTask(),
+        history: history,
+        lang: lang,
+        name: cfg.name,
+        suffix: cfg.suffix,
+        level: level,
+        shout: shout,
+        lastReason: lastReason,
+        lastApp: lastApp,
+      ).timeout(const Duration(seconds: 6));
+    } catch (_) {
+      return null;
+    }
+  }
+
   void _previewIntercept() {
     final nav = navKey.currentState;
     if (nav == null) return;
@@ -91,9 +132,10 @@ class _SpikePageState extends State<SpikePage> with WidgetsBindingObserver {
         total: 3,
         locked: step == 3,
         passOptions: const [5, 10, 15],
-        onBack: () => nav.pop(),
-        onPass: (_) => nav.pop(),
-        onLeft: () => nav.pop(),
+        onBack: () => nav.popUntil((r) => r.isFirst),
+        onPass: (m, reason) => nav.popUntil((r) => r.isFirst),
+        onLeft: () => nav.popUntil((r) => r.isFirst),
+        fetchLine: (shout) => _aiLine('YouTube', step, shout)
       ),
     ));
   }
@@ -254,27 +296,34 @@ class _SpikePageState extends State<SpikePage> with WidgetsBindingObserver {
     );
   }
 
-    Future<void> _checkPendingIntercept() async {
+  Future<void> _checkPendingIntercept() async {
     final r = await _channel.invokeMapMethod<String, dynamic>('getPendingIntercept');
     if (r == null) return;
     final nav = navKey.currentState;
     if (nav == null) return;
 
-    Future<void> answer(String action, int minutes) async {
-      await _channel.invokeMethod('interceptDone', {'action': action, 'minutes': minutes});
-      nav.pop();
+    final app = r['app'] as String;
+
+    Future<void> answer(String action, int minutes, [String? reason]) async {
+      if (reason != null) await Store.addCheckin(app, reason);
+      await _channel.invokeMethod(
+        'interceptDone',
+        {'action': action, 'minutes': minutes, 'reason': reason},
+      );
+      nav.popUntil((route) => route.isFirst);
     }
 
     await nav.push(MaterialPageRoute(
       builder: (_) => InterceptScreen(
-        app: r['app'] as String,
+        app: app,
         level: (r['level'] as num).toInt(),
         total: (r['total'] as num).toInt(),
         locked: r['locked'] as bool,
         passOptions: (r['options'] as List).map((e) => (e as num).toInt()).toList(),
         onBack: () => answer('back', 0),
-        onPass: (m) => answer('pass', m),
+        onPass: (m, reason) => answer('pass', m, reason),
         onLeft: () => answer('left', 0),
+        fetchLine: (shout) => _aiLine(app, (r['level'] as num).toInt(), shout)
       ),
     ));
   }

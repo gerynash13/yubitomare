@@ -15,4 +15,5 @@
     <string name="overlay_back">戻る</string>
     <string name="overlay_more">あと%1$d分</string>
     <string name="overlay_more_wait">あと%1$d分（%2$d）</string>
+    <string name="overlay_permission_missing">オーバーレイ権限がありません</string>
 </resources>

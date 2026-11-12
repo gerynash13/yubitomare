@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import '../l10n/app_localizations.dart';
+import 'negotiation_screen.dart';
 import 'theme.dart';
 import 'tomarin_ui.dart';
 
@@ -12,7 +15,7 @@ enum _Mood { soft, annoyed, furious, closed }
 ///
 /// It only draws and reports what the user did. Android decides what happens next:
 ///  - [onBack]: the user chose to go back
-///  - [onPass]: the user took a pass of the given minutes
+///  - [onPass]: the user took a pass of the given minutes, and said why
 ///  - [onLeft]: the user left (home button, app switcher) without answering
 class InterceptScreen extends StatefulWidget {
   final String app; // name of the guarded app, e.g. YouTube
@@ -21,8 +24,9 @@ class InterceptScreen extends StatefulWidget {
   final bool locked; // no passes left: "closed for today"
   final List<int> passOptions; // minutes, e.g. [5, 10, 15]
   final VoidCallback onBack;
-  final void Function(int minutes) onPass;
+  final void Function(int minutes, String reason) onPass;
   final VoidCallback onLeft;
+  final Future<String?> Function(String shout) fetchLine;
 
   const InterceptScreen({
     super.key,
@@ -34,6 +38,7 @@ class InterceptScreen extends StatefulWidget {
     required this.onBack,
     required this.onPass,
     required this.onLeft,
+    required this.fetchLine,
   });
 
   @override
@@ -46,6 +51,8 @@ class _InterceptScreenState extends State<InterceptScreen>
   Timer? _timer;
   int _elapsed = 0; // seconds since the card appeared
   bool _answered = false;
+  String? _lineShout;
+  Future<String?>? _lineFuture;
 
   _Mood get _mood {
     if (widget.locked) return _Mood.closed;
@@ -93,16 +100,47 @@ class _InterceptScreenState extends State<InterceptScreen>
     }
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_mood == _Mood.closed) return;
+    final shout = _title(AppLocalizations.of(context)!);
+    if (_lineShout != shout) {
+      _lineShout = shout;
+      _lineFuture = widget.fetchLine(shout);
+    }
+  }
+
+  String _title(AppLocalizations l) => switch (_mood) {
+    _Mood.soft => l.interceptShout0,
+    _Mood.annoyed => l.interceptShout1(widget.app),
+    _Mood.furious => l.interceptShout2,
+    _Mood.closed => '',
+  };
+
   void _back() {
     if (_answered) return;
     _answered = true;
     widget.onBack();
   }
 
-  void _pass(int minutes) {
+  void _pass(int minutes, String reason) {
     if (_answered) return;
     _answered = true;
-    widget.onPass(minutes);
+    widget.onPass(minutes, reason);
+  }
+
+  // Tapping a pass does not grant it: Tomarin first asks for an honest reason.
+  void _negotiate(int minutes) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => NegotiationScreen(
+          minutes: minutes,
+          onConfirm: (reason) => _pass(minutes, reason),
+          onBack: _back,
+        ),
+      ),
+    );
   }
 
   // A longer pass, or a later card of the day, means a longer wait.
@@ -129,10 +167,11 @@ class _InterceptScreenState extends State<InterceptScreen>
   // ---------- soft / annoyed / furious ----------
 
   Widget _active(AppLocalizations l, _Mood mood) {
-    final (title, sub) = switch (mood) {
-      _Mood.soft => (l.interceptShout0, l.interceptSub0(widget.app)),
-      _Mood.annoyed => (l.interceptShout1(widget.app), l.interceptSub1),
-      _ => (l.interceptShout2, l.interceptSub2),
+    final title = _title(l);
+    final sub = switch (mood) {
+      _Mood.soft => l.interceptSub0(widget.app),
+      _Mood.annoyed => l.interceptSub1,
+      _ => l.interceptSub2,
     };
     final colors = switch (mood) {
       _Mood.soft => const [Color(0xFFFFA944), Color(0xFFF6C9AE)],
@@ -168,11 +207,12 @@ class _InterceptScreenState extends State<InterceptScreen>
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        if (widget.level > 0)
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: _Tag(l.interceptTag(widget.level, widget.total)),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: _Tag(
+                            l.interceptTag(widget.level, widget.total),
                           ),
+                        ),
                         Text(
                           title,
                           textAlign: TextAlign.center,
@@ -187,13 +227,33 @@ class _InterceptScreenState extends State<InterceptScreen>
                           textAlign: TextAlign.center,
                           style: T.body(16, weight: FontWeight.w700),
                         ),
+                        FutureBuilder<String?>(
+                          future: _lineFuture,
+                          builder: (context, snapshot) {
+                            final line = snapshot.data;
+                            if (line == null || line.isEmpty) {
+                              return const SizedBox.shrink();
+                            }
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 8),
+                              child: Text(
+                                line,
+                                textAlign: TextAlign.center,
+                                style: T.body(14, weight: FontWeight.w600),
+                              ),
+                            );
+                          },
+                        ),
                       ],
                     ),
                   ),
                   Expanded(
                     child: LayoutBuilder(
                       builder: (context, box) {
-                        final h = math.min(box.maxHeight, furious ? 360.0 : 320.0);
+                        final h = math.min(
+                          box.maxHeight,
+                          furious ? 360.0 : 320.0,
+                        );
                         return Center(child: _bird(pose, h, furious));
                       },
                     ),
@@ -264,7 +324,7 @@ class _InterceptScreenState extends State<InterceptScreen>
         borderRadius: BorderRadius.circular(14),
         child: InkWell(
           borderRadius: BorderRadius.circular(14),
-          onTap: enabled ? () => _pass(minutes) : null,
+          onTap: enabled ? () => _negotiate(minutes) : null,
           child: SizedBox(
             height: 56,
             child: Stack(
@@ -273,7 +333,11 @@ class _InterceptScreenState extends State<InterceptScreen>
                   child: Center(
                     child: Text(
                       l.interceptPass(minutes),
-                      style: T.body(14, color: Colors.white, weight: FontWeight.w700),
+                      style: T.body(
+                        14,
+                        color: Colors.white,
+                        weight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ),
@@ -369,7 +433,11 @@ class _InterceptScreenState extends State<InterceptScreen>
                 icon: const Icon(Icons.home_outlined),
                 label: Text(
                   l.interceptHome,
-                  style: T.body(18, color: Colors.white, weight: FontWeight.w800),
+                  style: T.body(
+                    18,
+                    color: Colors.white,
+                    weight: FontWeight.w800,
+                  ),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: T.vermilion,
@@ -389,23 +457,23 @@ class _InterceptScreenState extends State<InterceptScreen>
 
   Widget _infoCard(AppLocalizations l) {
     Widget row(String label, String value, {bool big = false}) => Padding(
-          padding: const EdgeInsets.symmetric(vertical: 6),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                label,
-                style: T.body(14, color: T.inkSoft, weight: FontWeight.w700),
-              ),
-              Text(
-                value,
-                style: big
-                    ? T.shout(18, color: T.vermilion)
-                    : T.body(14, color: T.vermilion, weight: FontWeight.w800),
-              ),
-            ],
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: T.body(14, color: T.inkSoft, weight: FontWeight.w700),
           ),
-        );
+          Text(
+            value,
+            style: big
+                ? T.shout(18, color: T.vermilion)
+                : T.body(14, color: T.vermilion, weight: FontWeight.w800),
+          ),
+        ],
+      ),
+    );
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
@@ -416,7 +484,10 @@ class _InterceptScreenState extends State<InterceptScreen>
       ),
       child: Column(
         children: [
-          row(l.interceptClosedUsed, l.interceptClosedUsedValue(widget.total, widget.total)),
+          row(
+            l.interceptClosedUsed,
+            l.interceptClosedUsedValue(widget.total, widget.total),
+          ),
           const Divider(height: 1, color: T.line),
           row(l.interceptClosedNext, l.interceptClosedAt, big: true),
         ],
