@@ -468,4 +468,190 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get crisisOk => 'I am okay for now';
+
+  @override
+  String get navToday => 'Today';
+
+  @override
+  String get navFocus => 'Focus';
+
+  @override
+  String get navRecord => 'Record';
+
+  @override
+  String get appTitle => 'Yubitomare';
+
+  @override
+  String statusRunning(int count) {
+    return 'Watching ($count apps)';
+  }
+
+  @override
+  String get statusPaused => 'Guard paused';
+
+  @override
+  String get statusPausedSub =>
+      'The guard is paused, so nothing stops you from scrolling.';
+
+  @override
+  String get statusMissing => 'Permission missing';
+
+  @override
+  String get statusMissingSub =>
+      'Tomarin cannot watch without a permission. Please check it.';
+
+  @override
+  String get statusResume => 'Resume';
+
+  @override
+  String get statusFix => 'Fix';
+
+  @override
+  String todayBond(int level, String name) {
+    return 'Bond Lv.$level $name';
+  }
+
+  @override
+  String get todayNagTitle => 'Did you really look at today?';
+
+  @override
+  String todayNag(String task) {
+    return 'Start with $task. Put the phone down and get ready!';
+  }
+
+  @override
+  String get todayNagEmpty =>
+      'Nothing is planned yet. Pick one small thing for today.';
+
+  @override
+  String get todayTasksTitle => 'To-dos for today';
+
+  @override
+  String get todayAdd => 'Add';
+
+  @override
+  String get todayDoneStamp => 'DONE';
+
+  @override
+  String get todayStartFocus => 'Start focusing';
+
+  @override
+  String get todayStartFocusSub => 'Focus together with Tomarin';
+
+  @override
+  String get fsTitle => 'What will you do?';
+
+  @override
+  String get fsGoalHint => 'A one-line goal (optional)';
+
+  @override
+  String get fsStart => 'Focus with Tomarin';
+
+  @override
+  String get fsNote =>
+      'The screen will go dark. Every 10 minutes or so Tomarin will call out, so answer it.';
+
+  @override
+  String get fsNoTasks => 'Add tasks on the Today tab, or just start.';
+
+  @override
+  String focusNow(String goal) {
+    return 'Now: $goal';
+  }
+
+  @override
+  String get focusUnit => 'min';
+
+  @override
+  String get focusWith => 'Focusing with Tomarin';
+
+  @override
+  String get checkTitle => 'Pi? Are you there?';
+
+  @override
+  String get checkHint => 'Tap to answer';
+
+  @override
+  String get sumTitle => 'Good work!';
+
+  @override
+  String get sumResult => 'Result';
+
+  @override
+  String sumDone(int minutes) {
+    return '$minutes min of focus done!';
+  }
+
+  @override
+  String sumPartial(int minutes) {
+    return 'You were here for $minutes min. Only the part I could confirm counts.';
+  }
+
+  @override
+  String get sumBookTitle => 'Contact book';
+
+  @override
+  String get sumWhat => 'What did you do?';
+
+  @override
+  String get sumWhatHint => 'e.g. Planned the report outline';
+
+  @override
+  String get sumHow => 'How well did you focus?';
+
+  @override
+  String get sumP0 => 'Not at all';
+
+  @override
+  String get sumP1 => 'A little';
+
+  @override
+  String get sumP2 => 'Quite';
+
+  @override
+  String get sumP3 => 'Perfectly';
+
+  @override
+  String get sumSave => 'Write it down and thank Tomarin';
+
+  @override
+  String get sumSkip => 'Close the book and rest';
+
+  @override
+  String get sumPenTitle => 'Red pen from Tomarin';
+
+  @override
+  String get sumReward => 'Rewards';
+
+  @override
+  String get replyGreat => 'Well done! Look at all that progress. Keep it up!';
+
+  @override
+  String get replyFair =>
+      'Good job! You moved forward. Next time, aim for a little more.';
+
+  @override
+  String get replyLittle =>
+      'A little is still something. Let us make the first step smaller next time.';
+
+  @override
+  String get replyNone =>
+      'That happens. Next step: just open your notebook. The time you sat there counts too.';
+
+  @override
+  String get recTitle => 'This week';
+
+  @override
+  String get recHero => 'Time focused this week';
+
+  @override
+  String recTime(int hours, int minutes) {
+    return '$hours h $minutes min';
+  }
+
+  @override
+  String get recMemo => 'Notes from Tomarin';
+
+  @override
+  String get recEmpty => 'Nothing yet. Let us start writing from today.';
 }

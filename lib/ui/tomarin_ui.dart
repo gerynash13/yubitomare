@@ -11,6 +11,7 @@ enum Pose {
   sleepy,
   gentle,
   delighted,
+  neutral, // calm resting pose for the Today screen (tomarin_neutral.png, to be added)
 }
 
 /// Tomarin as a picture. If the file is missing, a small placeholder bird shows instead.
@@ -19,16 +20,29 @@ class TomarinSprite extends StatelessWidget {
   final double height;
   const TomarinSprite(this.pose, {super.key, this.height = 260});
 
+  Widget _placeholder() => SizedBox(
+        height: height,
+        child: Icon(Icons.flutter_dash, size: height * 0.6, color: T.inkSoft),
+      );
+
   @override
   Widget build(BuildContext context) {
     return Image.asset(
       'assets/tomarin/tomarin_${pose.name}.png',
       height: height,
       fit: BoxFit.contain,
-      errorBuilder: (context, error, stack) => SizedBox(
-        height: height,
-        child: Icon(Icons.flutter_dash, size: height * 0.6, color: T.inkSoft),
-      ),
+      errorBuilder: (context, error, stack) {
+        // Until the neutral pose exists, the landing pose stands in for it.
+        if (pose == Pose.neutral) {
+          return Image.asset(
+            'assets/tomarin/tomarin_landing.png',
+            height: height,
+            fit: BoxFit.contain,
+            errorBuilder: (context, error, stack) => _placeholder(),
+          );
+        }
+        return _placeholder();
+      },
     );
   }
 }
@@ -159,6 +173,49 @@ class HankoStamp extends StatelessWidget {
           style: T.shout(size * 0.24, color: T.vermilion, height: 1.15),
         ),
       ),
+    );
+  }
+}
+
+/// A white paper card with a soft shadow, optionally held up by a strip of washi tape.
+class PaperCard extends StatelessWidget {
+  final Widget child;
+  final EdgeInsetsGeometry padding;
+  final Color color;
+  final bool tape;
+  const PaperCard({
+    super.key,
+    required this.child,
+    this.padding = const EdgeInsets.all(18),
+    this.color = Colors.white,
+    this.tape = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.topCenter,
+      clipBehavior: Clip.none,
+      children: [
+        Container(
+          width: double.infinity,
+          margin: EdgeInsets.only(top: tape ? 10 : 0),
+          padding: padding,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x1A000000),
+                blurRadius: 14,
+                offset: Offset(0, 5),
+              ),
+            ],
+          ),
+          child: child,
+        ),
+        if (tape) const Positioned(top: 0, child: WashiTape(width: 90)),
+      ],
     );
   }
 }

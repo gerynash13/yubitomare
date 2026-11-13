@@ -163,10 +163,12 @@ class TrackerService : Service() {
             }
             handler.post(tick)
         }
+        setRunningFlag(true)
         return START_STICKY
     }
 
     override fun onDestroy() {
+        setRunningFlag(false)
         overlay.hide()
         handler.removeCallbacks(tick)
         if (running) unregisterReceiver(screenReceiver)
@@ -175,6 +177,12 @@ class TrackerService : Service() {
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
+
+    // The Today screen reads this to show "watching" or "paused".
+    private fun setRunningFlag(on: Boolean) {
+        getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
+            .edit().putBoolean("flutter.tracker_running", on).apply()
+    }
 
     // ---------- tracking ----------
 

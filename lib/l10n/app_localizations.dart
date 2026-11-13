@@ -823,6 +823,336 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'I am okay for now'**
   String get crisisOk;
+
+  /// No description provided for @navToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get navToday;
+
+  /// No description provided for @navFocus.
+  ///
+  /// In en, this message translates to:
+  /// **'Focus'**
+  String get navFocus;
+
+  /// No description provided for @navRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Record'**
+  String get navRecord;
+
+  /// No description provided for @appTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Yubitomare'**
+  String get appTitle;
+
+  /// No description provided for @statusRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'Watching ({count} apps)'**
+  String statusRunning(int count);
+
+  /// No description provided for @statusPaused.
+  ///
+  /// In en, this message translates to:
+  /// **'Guard paused'**
+  String get statusPaused;
+
+  /// No description provided for @statusPausedSub.
+  ///
+  /// In en, this message translates to:
+  /// **'The guard is paused, so nothing stops you from scrolling.'**
+  String get statusPausedSub;
+
+  /// No description provided for @statusMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission missing'**
+  String get statusMissing;
+
+  /// No description provided for @statusMissingSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Tomarin cannot watch without a permission. Please check it.'**
+  String get statusMissingSub;
+
+  /// No description provided for @statusResume.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get statusResume;
+
+  /// No description provided for @statusFix.
+  ///
+  /// In en, this message translates to:
+  /// **'Fix'**
+  String get statusFix;
+
+  /// No description provided for @todayBond.
+  ///
+  /// In en, this message translates to:
+  /// **'Bond Lv.{level} {name}'**
+  String todayBond(int level, String name);
+
+  /// No description provided for @todayNagTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Did you really look at today?'**
+  String get todayNagTitle;
+
+  /// No description provided for @todayNag.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with {task}. Put the phone down and get ready!'**
+  String todayNag(String task);
+
+  /// No description provided for @todayNagEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing is planned yet. Pick one small thing for today.'**
+  String get todayNagEmpty;
+
+  /// No description provided for @todayTasksTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'To-dos for today'**
+  String get todayTasksTitle;
+
+  /// No description provided for @todayAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get todayAdd;
+
+  /// No description provided for @todayDoneStamp.
+  ///
+  /// In en, this message translates to:
+  /// **'DONE'**
+  String get todayDoneStamp;
+
+  /// No description provided for @todayStartFocus.
+  ///
+  /// In en, this message translates to:
+  /// **'Start focusing'**
+  String get todayStartFocus;
+
+  /// No description provided for @todayStartFocusSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Focus together with Tomarin'**
+  String get todayStartFocusSub;
+
+  /// No description provided for @fsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What will you do?'**
+  String get fsTitle;
+
+  /// No description provided for @fsGoalHint.
+  ///
+  /// In en, this message translates to:
+  /// **'A one-line goal (optional)'**
+  String get fsGoalHint;
+
+  /// No description provided for @fsStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Focus with Tomarin'**
+  String get fsStart;
+
+  /// No description provided for @fsNote.
+  ///
+  /// In en, this message translates to:
+  /// **'The screen will go dark. Every 10 minutes or so Tomarin will call out, so answer it.'**
+  String get fsNote;
+
+  /// No description provided for @fsNoTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'Add tasks on the Today tab, or just start.'**
+  String get fsNoTasks;
+
+  /// No description provided for @focusNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Now: {goal}'**
+  String focusNow(String goal);
+
+  /// No description provided for @focusUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'min'**
+  String get focusUnit;
+
+  /// No description provided for @focusWith.
+  ///
+  /// In en, this message translates to:
+  /// **'Focusing with Tomarin'**
+  String get focusWith;
+
+  /// No description provided for @checkTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pi? Are you there?'**
+  String get checkTitle;
+
+  /// No description provided for @checkHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to answer'**
+  String get checkHint;
+
+  /// No description provided for @sumTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Good work!'**
+  String get sumTitle;
+
+  /// No description provided for @sumResult.
+  ///
+  /// In en, this message translates to:
+  /// **'Result'**
+  String get sumResult;
+
+  /// No description provided for @sumDone.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min of focus done!'**
+  String sumDone(int minutes);
+
+  /// No description provided for @sumPartial.
+  ///
+  /// In en, this message translates to:
+  /// **'You were here for {minutes} min. Only the part I could confirm counts.'**
+  String sumPartial(int minutes);
+
+  /// No description provided for @sumBookTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact book'**
+  String get sumBookTitle;
+
+  /// No description provided for @sumWhat.
+  ///
+  /// In en, this message translates to:
+  /// **'What did you do?'**
+  String get sumWhat;
+
+  /// No description provided for @sumWhatHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Planned the report outline'**
+  String get sumWhatHint;
+
+  /// No description provided for @sumHow.
+  ///
+  /// In en, this message translates to:
+  /// **'How well did you focus?'**
+  String get sumHow;
+
+  /// No description provided for @sumP0.
+  ///
+  /// In en, this message translates to:
+  /// **'Not at all'**
+  String get sumP0;
+
+  /// No description provided for @sumP1.
+  ///
+  /// In en, this message translates to:
+  /// **'A little'**
+  String get sumP1;
+
+  /// No description provided for @sumP2.
+  ///
+  /// In en, this message translates to:
+  /// **'Quite'**
+  String get sumP2;
+
+  /// No description provided for @sumP3.
+  ///
+  /// In en, this message translates to:
+  /// **'Perfectly'**
+  String get sumP3;
+
+  /// No description provided for @sumSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Write it down and thank Tomarin'**
+  String get sumSave;
+
+  /// No description provided for @sumSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Close the book and rest'**
+  String get sumSkip;
+
+  /// No description provided for @sumPenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Red pen from Tomarin'**
+  String get sumPenTitle;
+
+  /// No description provided for @sumReward.
+  ///
+  /// In en, this message translates to:
+  /// **'Rewards'**
+  String get sumReward;
+
+  /// No description provided for @replyGreat.
+  ///
+  /// In en, this message translates to:
+  /// **'Well done! Look at all that progress. Keep it up!'**
+  String get replyGreat;
+
+  /// No description provided for @replyFair.
+  ///
+  /// In en, this message translates to:
+  /// **'Good job! You moved forward. Next time, aim for a little more.'**
+  String get replyFair;
+
+  /// No description provided for @replyLittle.
+  ///
+  /// In en, this message translates to:
+  /// **'A little is still something. Let us make the first step smaller next time.'**
+  String get replyLittle;
+
+  /// No description provided for @replyNone.
+  ///
+  /// In en, this message translates to:
+  /// **'That happens. Next step: just open your notebook. The time you sat there counts too.'**
+  String get replyNone;
+
+  /// No description provided for @recTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'This week'**
+  String get recTitle;
+
+  /// No description provided for @recHero.
+  ///
+  /// In en, this message translates to:
+  /// **'Time focused this week'**
+  String get recHero;
+
+  /// No description provided for @recTime.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} h {minutes} min'**
+  String recTime(int hours, int minutes);
+
+  /// No description provided for @recMemo.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes from Tomarin'**
+  String get recMemo;
+
+  /// No description provided for @recEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing yet. Let us start writing from today.'**
+  String get recEmpty;
 }
 
 class _AppLocalizationsDelegate

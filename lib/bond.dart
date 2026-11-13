@@ -6,12 +6,14 @@ class BondState {
   String day; // the date the daily counters belong to
   int focusToday; // focus minutes already counted today
   int checkinsToday;
+  int tasksToday; // tasks already counted today
 
   BondState({
     this.points = 0,
     this.day = '',
     this.focusToday = 0,
     this.checkinsToday = 0,
+    this.tasksToday = 0,
   });
 
   Map<String, dynamic> toJson() => {
@@ -19,6 +21,7 @@ class BondState {
         'day': day,
         'focusToday': focusToday,
         'checkinsToday': checkinsToday,
+        'tasksToday': tasksToday,
       };
 
   factory BondState.fromJson(Map<String, dynamic> j) => BondState(
@@ -26,6 +29,7 @@ class BondState {
         day: (j['day'] as String?) ?? '',
         focusToday: (j['focusToday'] as num?)?.toInt() ?? 0,
         checkinsToday: (j['checkinsToday'] as num?)?.toInt() ?? 0,
+        tasksToday: (j['tasksToday'] as num?)?.toInt() ?? 0,
       );
 }
 
@@ -38,12 +42,15 @@ class BondResult {
   bool get leveledUp => newLevel > oldLevel;
 }
 
+/// Bond only goes up: it grows from focus time and finished tasks, never from slips.
 class Bond {
   // Tune these freely.
   static const levelStarts = [0, 100, 300, 700, 1500];
   static const dailyFocusCapMinutes = 120;
   static const checkinPoints = 5;
   static const dailyCheckinCap = 3;
+  static const taskPoints = 10;
+  static const dailyTaskCap = 5;
   static const _key = 'bond';
 
   static String _today() {
@@ -63,6 +70,7 @@ class Bond {
       s.day = _today();
       s.focusToday = 0;
       s.checkinsToday = 0;
+      s.tasksToday = 0;
     }
     return s;
   }
@@ -108,6 +116,21 @@ class Bond {
     if (s.checkinsToday < dailyCheckinCap) {
       gained = checkinPoints;
       s.checkinsToday += 1;
+      s.points += gained;
+    }
+    await _save(s);
+    return BondResult(gained, old, levelFor(s.points), gained == 0);
+  }
+
+  /// A task was finished. Only the first few per day count, so ticking and
+  /// unticking cannot be farmed.
+  static Future<BondResult> addTaskDone() async {
+    final s = await load();
+    final old = levelFor(s.points);
+    var gained = 0;
+    if (s.tasksToday < dailyTaskCap) {
+      gained = taskPoints;
+      s.tasksToday += 1;
       s.points += gained;
     }
     await _save(s);

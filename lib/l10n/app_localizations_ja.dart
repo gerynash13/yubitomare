@@ -452,4 +452,183 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get crisisOk => 'いまはだいじょうぶ';
+
+  @override
+  String get navToday => '今日';
+
+  @override
+  String get navFocus => '集中';
+
+  @override
+  String get navRecord => '記録';
+
+  @override
+  String get appTitle => 'ゆびとまれ';
+
+  @override
+  String statusRunning(int count) {
+    return '見守り中（$countアプリ）';
+  }
+
+  @override
+  String get statusPaused => '見張りを止めています';
+
+  @override
+  String get statusPausedSub => '見張りを止めているので、スマホを見すぎても止めてあげられないよ。';
+
+  @override
+  String get statusMissing => '許可が足りません';
+
+  @override
+  String get statusMissingSub => '見守りに必要な許可が足りないみたい。確認してね。';
+
+  @override
+  String get statusResume => '再開する';
+
+  @override
+  String get statusFix => 'なおす';
+
+  @override
+  String todayBond(int level, String name) {
+    return '絆 レベル$level $name';
+  }
+
+  @override
+  String get todayNagTitle => '今日の予定、ちゃんと見た？';
+
+  @override
+  String todayNag(String task) {
+    return 'まずは「$task」からだよ。スマホを触ってないで、準備して！';
+  }
+
+  @override
+  String get todayNagEmpty => 'まだ何も決まってないよ。今日やることをひとつ決めよ。';
+
+  @override
+  String get todayTasksTitle => 'きょうのお役目';
+
+  @override
+  String get todayAdd => '追加';
+
+  @override
+  String get todayDoneStamp => '花丸';
+
+  @override
+  String get todayStartFocus => '集中をはじめる';
+
+  @override
+  String get todayStartFocusSub => 'とまりんと一緒に集中';
+
+  @override
+  String get fsTitle => '何をする？';
+
+  @override
+  String get fsGoalHint => 'ひとこと目標（なくてもOK）';
+
+  @override
+  String get fsStart => 'とまりんと集中する';
+
+  @override
+  String get fsNote => '画面は暗くなるよ。10分ごとに『ぴ？』と呼ぶから、返事してね。';
+
+  @override
+  String get fsNoTasks => 'タスクは「今日」タブで足せるよ。なしでもはじめられるよ。';
+
+  @override
+  String focusNow(String goal) {
+    return 'いま：$goal';
+  }
+
+  @override
+  String get focusUnit => '分';
+
+  @override
+  String get focusWith => 'とまりんと一緒に集中';
+
+  @override
+  String get checkTitle => 'ぴ？ いる？';
+
+  @override
+  String get checkHint => 'タップで返事';
+
+  @override
+  String get sumTitle => 'おつかれさま！';
+
+  @override
+  String get sumResult => '本日の成果';
+
+  @override
+  String sumDone(int minutes) {
+    return '$minutes分 集中完了！';
+  }
+
+  @override
+  String sumPartial(int minutes) {
+    return '$minutes分いたけど、確認できたぶんだけ数えたよ。';
+  }
+
+  @override
+  String get sumBookTitle => '今日のれんらく帳';
+
+  @override
+  String get sumWhat => '今日は何をした？';
+
+  @override
+  String get sumWhatHint => '例：レポートの構成を考えた';
+
+  @override
+  String get sumHow => '集中できたかな？';
+
+  @override
+  String get sumP0 => 'ぜんぜん';
+
+  @override
+  String get sumP1 => 'ちょっと';
+
+  @override
+  String get sumP2 => 'けっこう';
+
+  @override
+  String get sumP3 => 'ばっちり';
+
+  @override
+  String get sumSave => '記録して、とまりんをねぎらう';
+
+  @override
+  String get sumSkip => '連絡帳をとじて休憩する';
+
+  @override
+  String get sumPenTitle => '赤ペン先生コメント';
+
+  @override
+  String get sumReward => 'もらったごほうび';
+
+  @override
+  String get replyGreat => 'えらい！ よくやったじゃない。この調子でいこうね！';
+
+  @override
+  String get replyFair => 'いいじゃない！ ちゃんと進んだよ。次はもうちょっとだけ欲張ろ。';
+
+  @override
+  String get replyLittle => 'ちょっとでも進んだなら十分だよ。次の一歩は、もっと小さくしよ。';
+
+  @override
+  String get replyNone => 'ぜんぜんだったんだね。次の一歩は、ノートを開くだけにしよ。座っていた時間も、ちゃんと数えたよ。';
+
+  @override
+  String get recTitle => '今週のきろく';
+
+  @override
+  String get recHero => '今週、集中した時間';
+
+  @override
+  String recTime(int hours, int minutes) {
+    return '$hours時間$minutes分';
+  }
+
+  @override
+  String get recMemo => 'とまりんの連絡帳メモ';
+
+  @override
+  String get recEmpty => 'まだ記録がないよ。今日から、いっしょにつけよ。';
 }
