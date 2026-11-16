@@ -4,6 +4,11 @@ import '../focus_log.dart';
 import '../l10n/app_localizations.dart';
 import 'theme.dart';
 import 'tomarin_ui.dart';
+import 'focus_session_screen.dart' show kFocusTestMode;
+import '../locale_controller.dart';
+import '../reflect_api.dart';
+import '../tracker_config.dart';
+import 'crisis_screen.dart';
 
 /// Shown right after a focus session. The user can write what they did and how well it went.
 /// Everything here is optional: closing the book is always allowed.
@@ -32,6 +37,14 @@ class _SummaryScreenState extends State<SummaryScreen> {
   String? _progress; // none, little, fair, great
   bool _saved = false;
   String _reply = '';
+  bool _waiting = false;
+  bool _crisis = false;
+
+  // A note that sounds like real distress is never sent to the AI.
+  static final _heavyWords = RegExp(
+    r'死にた|消えたい|いなくなりたい|自殺|生きて.{0,6}(たくない|意味)|kill myself|suicide|want to die|end it all',
+    caseSensitive: false,
+  );
 
   @override
   void dispose() {
@@ -52,11 +65,46 @@ class _SummaryScreenState extends State<SummaryScreen> {
   Future<void> _save() async {
     final l = AppLocalizations.of(context)!;
     final progress = _progress ?? '';
-    await FocusLog.updateLast(text: _text.text.trim(), progress: progress);
+    final note = _text.text.trim();
+    await FocusLog.updateLast(text: note, progress: progress);
     if (!mounted) return;
+
+    if (_heavyWords.hasMatch(note)) {
+      setState(() {
+        _saved = true;
+        _crisis = true;
+        _reply = '${l.sincere1}\n\n${l.sincere2}';
+      });
+      return;
+    }
+
+    final fallback = _replyFor(l, progress);
     setState(() {
       _saved = true;
-      _reply = _replyFor(l, progress);
+      _waiting = true;
+      _reply = '';
+    });
+    String? ai;
+    try {
+      final cfg = await TrackerConfig.load();
+      final logs = await FocusLog.load();
+      final goal = logs.isEmpty ? '' : (logs.last['goal'] as String? ?? '');
+      ai = await fetchReflection(
+        lang: await effectiveLanguage(),
+        name: cfg.name,
+        suffix: cfg.suffix,
+        progress: progress,
+        note: note,
+        goal: goal,
+        minutes: widget.credited,
+      ).timeout(const Duration(seconds: 8));
+    } catch (_) {
+      ai = null;
+    }
+    if (!mounted) return;
+    setState(() {
+      _waiting = false;
+      _reply = (ai == null || ai.isEmpty) ? fallback : ai;
     });
   }
 
@@ -66,7 +114,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     // A very short session: no notebook, just a friendly word.
-    if (widget.credited < 2) return _short(l);
+    if (widget.credited < (kFocusTestMode ? 0 : 2)) return _short(l);
 
     final proud = _progress == 'great' || _progress == 'fair';
     return Scaffold(
@@ -215,11 +263,23 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                   style: T.note(14, color: T.vermilion),
                                 ),
                                 const SizedBox(height: 8),
-                                Text(_reply, style: T.note(19, color: T.vermilion, height: 1.6)),
+                                Text(
+                                  _waiting ? '…' : _reply,
+                                  style: T.note(19, color: T.vermilion, height: 1.6),
+                                ),
+                                if (_crisis) ...[
+                                  const SizedBox(height: 12),
+                                  OutlinedButton(
+                                    onPressed: () => Navigator.of(context).push(
+                                      MaterialPageRoute(builder: (_) => const CrisisScreen()),
+                                    ),
+                                    child: Text(l.crisisTitle),
+                                  ),
+                                ],
                               ],
                             ),
                           ),
-                          if (proud) HankoStamp(text: l.todayDoneStamp, size: 60, angle: -0.2),
+                          if (proud && !_waiting && !_crisis) HankoStamp(text: l.todayDoneStamp, size: 60, angle: -0.2),
                         ],
                       ),
                     ),

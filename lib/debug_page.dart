@@ -5,7 +5,6 @@ import 'l10n/app_localizations.dart';
 import 'memory.dart';
 import 'roast_api.dart';
 import 'settings_screen.dart';
-import 'tasks_screen.dart';
 import 'tracker_config.dart';
 import 'locale_controller.dart';
 import 'ui/ai_line.dart';
@@ -145,11 +144,6 @@ class _DebugPageState extends State<DebugPage> {
               ElevatedButton(
                 onPressed: () => _channel.invokeMethod('stopTracker'),
                 child: const Text('Stop tracker'),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (_) => const TasksScreen())),
-                child: const Text('Old tasks'),
               ),
               ElevatedButton(
                 onPressed: () => Navigator.of(context)

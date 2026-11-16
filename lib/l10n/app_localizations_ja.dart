@@ -631,4 +631,52 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get recEmpty => 'まだ記録がないよ。今日から、いっしょにつけよ。';
+
+  @override
+  String get statusPause => '見張りを休む';
+
+  @override
+  String get pauseTitle => 'ほんとに休む？';
+
+  @override
+  String get pauseBody => '休んでいる間は、スマホを見すぎても、とまりんは止めてあげられないよ。';
+
+  @override
+  String get pauseCancel => 'やっぱりやめる';
+
+  @override
+  String get pauseConfirm => '休む';
+
+  @override
+  String get taskEdit => '編集';
+
+  @override
+  String get taskDelete => '削除';
+
+  @override
+  String get taskEditTitle => 'タスクを編集';
+
+  @override
+  String get taskSave => '保存';
+
+  @override
+  String get taskHint => '長押しで編集・削除';
+
+  @override
+  String get cancel => 'キャンセル';
+
+  @override
+  String get checkAck => 'ぴっ！ ちゃんといたね。';
+
+  @override
+  String get taskDoneTitle => 'ほんとに終わった？';
+
+  @override
+  String get taskDoneBody => '完了にすると、あとから戻せないよ。';
+
+  @override
+  String get taskDoneYes => '終わった！';
+
+  @override
+  String get taskDoneNot => 'まだ';
 }

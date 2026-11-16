@@ -25,11 +25,18 @@ class _TodayScreenState extends State<TodayScreen> with WidgetsBindingObserver {
   static const _channel = MethodChannel('detox_pet/usage');
   final _addCtl = TextEditingController();
 
-  List<Task> _tasks = [];
+  List<Task> _tasks = []; // every task, saved as a whole
   BondState _bond = BondState();
   int _passes = 0;
   int _appCount = 0;
   _Status _status = _Status.paused;
+
+  /// Undone tasks, plus tasks finished today. Tasks finished on an earlier day
+  /// stay in storage (for the Record tab later) but leave this list.
+  List<Task> get _visibleTasks {
+    final today = Store.todayKey();
+    return _tasks.where((t) => !t.done || t.doneOn == today).toList();
+  }
 
   @override
   void initState() {
@@ -53,6 +60,17 @@ class _TodayScreenState extends State<TodayScreen> with WidgetsBindingObserver {
 
   Future<void> _load() async {
     final tasks = await Store.loadTasks();
+    // Tasks finished before "finished on" existed: count them as finished today.
+    final today = Store.todayKey();
+    var migrated = false;
+    for (final t in tasks) {
+      if (t.done && t.doneOn == null) {
+        t.doneOn = today;
+        migrated = true;
+      }
+    }
+    if (migrated) await Store.saveTasks(tasks);
+
     final bond = await Bond.load();
     final passes = await InterceptLog.passesToday();
     final cfg = await TrackerConfig.load();
@@ -84,6 +102,32 @@ class _TodayScreenState extends State<TodayScreen> with WidgetsBindingObserver {
     }
   }
 
+  /// Pausing loosens the guard, so Tomarin asks first. "Never mind" is the loud button.
+  Future<void> _confirmPause() async {
+    final l = AppLocalizations.of(context)!;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.pauseTitle),
+        content: Text(l.pauseBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l.pauseConfirm),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l.pauseCancel),
+          ),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    await _channel.invokeMethod('stopTracker');
+    await Future.delayed(const Duration(milliseconds: 700));
+    if (mounted) _load();
+  }
+
   Future<void> _add() async {
     final text = _addCtl.text.trim();
     if (text.isEmpty) return;
@@ -98,15 +142,36 @@ class _TodayScreenState extends State<TodayScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _toggle(Task t) async {
-    setState(() => t.done = !t.done);
+    if (t.done) return; // finished tasks are final
+    final l = AppLocalizations.of(context)!;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.taskDoneTitle),
+        content: Text(l.taskDoneBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l.taskDoneNot),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l.taskDoneYes),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !mounted || t.done) return;
+    setState(() {
+      t.done = true;
+      t.doneOn = Store.todayKey();
+    });
     await Store.saveTasks(_tasks);
-    if (!t.done) return;
     final r = await Bond.addTaskDone();
     final bond = await Bond.load();
     if (!mounted) return;
     setState(() => _bond = bond);
     if (r.gained > 0) {
-      final l = AppLocalizations.of(context)!;
       final msg = r.leveledUp
           ? '${l.bondGainSmall(r.gained)}  ${l.bondUp}'
           : l.bondGainSmall(r.gained);
@@ -116,36 +181,116 @@ class _TodayScreenState extends State<TodayScreen> with WidgetsBindingObserver {
     }
   }
 
+  /// Long press on an unfinished task: edit or delete. Finished tasks are a record
+  /// of the day and cannot be changed.
+  Future<void> _showTaskMenu(Task t) async {
+    if (t.done) return;
+    HapticFeedback.mediumImpact();
+    final l = AppLocalizations.of(context)!;
+    final action = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: T.paper,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetCtx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 20, 24, 8),
+              child: Text(
+                t.text,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: T.body(16, weight: FontWeight.w800),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.edit_outlined),
+              title: Text(l.taskEdit, style: T.body(16, weight: FontWeight.w700)),
+              onTap: () => Navigator.pop(sheetCtx, 'edit'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete_outline, color: T.vermilion),
+              title: Text(
+                l.taskDelete,
+                style: T.body(16, color: T.vermilion, weight: FontWeight.w700),
+              ),
+              onTap: () => Navigator.pop(sheetCtx, 'delete'),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+    if (!mounted) return;
+    if (action == 'delete') await _remove(t);
+    if (action == 'edit') await _edit(t);
+  }
+
+  Future<void> _edit(Task t) async {
+    final text = await showDialog<String>(
+      context: context,
+      builder: (_) => _EditTaskDialog(initial: t.text),
+    );
+    if (text == null || text.trim().isEmpty) return;
+    setState(() => t.text = text.trim());
+    await Store.saveTasks(_tasks);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final level = Bond.levelFor(_bond.points);
     final nextTask = _tasks.where((t) => !t.done).map((t) => t.text).firstOrNull;
     final now = DateTime.now();
+    final shown = _visibleTasks;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
       children: [
         _header(l),
-        if (_status != _Status.running) ...[
+        if (_status == _Status.running)
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton.icon(
+              onPressed: _confirmPause,
+              icon: const Icon(Icons.pause_circle_outline, size: 18),
+              label: Text(
+                l.statusPause,
+                style: T.body(12, weight: FontWeight.w700),
+              ),
+              style: TextButton.styleFrom(
+                foregroundColor: T.inkSoft,
+                visualDensity: VisualDensity.compact,
+              ),
+            ),
+          )
+        else ...[
           const SizedBox(height: 8),
           _statusStrip(l),
         ],
         const SizedBox(height: 14),
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _Tag(
-              text: l.todayBond(level + 1, l.bondLevelName(level.toString())),
-              icon: Icons.favorite_border,
-              color: T.persimmon.withValues(alpha: 0.4),
-              angle: -0.03,
+            Flexible(
+              child: _Tag(
+                text: l.todayBond(level + 1, l.bondLevelName(level.toString())),
+                icon: Icons.favorite_border,
+                color: T.persimmon.withValues(alpha: 0.4),
+                angle: -0.03,
+              ),
             ),
-            const Spacer(),
-            _Tag(
-              text: l.interceptTag(_passes, InterceptLog.dailyPasses),
-              icon: Icons.timer_outlined,
-              color: T.paperHigh,
-              angle: 0.03,
+            const SizedBox(width: 8),
+            Flexible(
+              child: _Tag(
+                text: l.interceptTag(_passes, InterceptLog.dailyPasses),
+                icon: Icons.timer_outlined,
+                color: T.paperHigh,
+                angle: 0.03,
+              ),
             ),
           ],
         ),
@@ -201,7 +346,12 @@ class _TodayScreenState extends State<TodayScreen> with WidgetsBindingObserver {
           ],
         ),
         const SizedBox(height: 10),
-        for (final t in _tasks) _taskRow(l, t),
+        if (_tasks.any((t) => !t.done))
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Text(l.taskHint, style: T.body(12, color: T.inkSoft)),
+          ),
+        for (final t in shown) _taskRow(l, t),
         Container(
           padding: const EdgeInsets.fromLTRB(14, 4, 6, 4),
           decoration: BoxDecoration(
@@ -282,25 +432,39 @@ class _TodayScreenState extends State<TodayScreen> with WidgetsBindingObserver {
         ),
         const SizedBox(width: 10),
         Text(l.appTitle, style: T.shout(20)),
-        const Spacer(),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: T.paperLow,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: T.line),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 8,
-                height: 8,
-                decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+        const SizedBox(width: 8),
+        // The chip takes whatever room is left and shortens its text if it must,
+        // so the row can never overflow.
+        Expanded(
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: T.paperLow,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: T.line),
               ),
-              const SizedBox(width: 6),
-              Text(chip, style: T.body(12, color: color, weight: FontWeight.w800)),
-            ],
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+                  ),
+                  const SizedBox(width: 6),
+                  Flexible(
+                    child: Text(
+                      chip,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: T.body(12, color: color, weight: FontWeight.w800),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
         const SizedBox(width: 8),
@@ -357,50 +521,47 @@ class _TodayScreenState extends State<TodayScreen> with WidgetsBindingObserver {
   }
 
   Widget _taskRow(AppLocalizations l, Task t) {
-    return Dismissible(
-      key: ObjectKey(t),
-      onDismissed: (_) => _remove(t),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        decoration: BoxDecoration(
-          color: t.done ? T.paperLow : Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: const [
-            BoxShadow(color: Color(0x14000000), blurRadius: 6, offset: Offset(0, 2)),
-          ],
-        ),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () => _toggle(t),
-          child: Padding(
-            padding: const EdgeInsets.all(14),
-            child: Row(
-              children: [
-                Container(
-                  width: 26,
-                  height: 26,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: t.done ? T.vermilion : Colors.transparent,
-                    border: Border.all(color: t.done ? T.vermilion : T.line, width: 2),
-                  ),
-                  child: t.done
-                      ? const Icon(Icons.check, size: 16, color: Colors.white)
-                      : null,
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: t.done ? T.paperLow : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: const [
+          BoxShadow(color: Color(0x14000000), blurRadius: 6, offset: Offset(0, 2)),
+        ],
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: t.done ? null : () => _toggle(t),
+        onLongPress: t.done ? null : () => _showTaskMenu(t),
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Row(
+            children: [
+              Container(
+                width: 26,
+                height: 26,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: t.done ? T.vermilion : Colors.transparent,
+                  border: Border.all(color: t.done ? T.vermilion : T.line, width: 2),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    t.text,
-                    style: T.body(16, weight: FontWeight.w700).copyWith(
-                      decoration: t.done ? TextDecoration.lineThrough : null,
-                      color: t.done ? T.inkSoft : T.ink,
-                    ),
+                child: t.done
+                    ? const Icon(Icons.check, size: 16, color: Colors.white)
+                    : null,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  t.text,
+                  style: T.body(16, weight: FontWeight.w700).copyWith(
+                    decoration: t.done ? TextDecoration.lineThrough : null,
+                    color: t.done ? T.inkSoft : T.ink,
                   ),
                 ),
-                if (t.done) HankoStamp(text: l.todayDoneStamp, size: 46, angle: -0.2),
-              ],
-            ),
+              ),
+              if (t.done) HankoStamp(text: l.todayDoneStamp, size: 46, angle: -0.2),
+            ],
           ),
         ),
       ),
@@ -408,7 +569,50 @@ class _TodayScreenState extends State<TodayScreen> with WidgetsBindingObserver {
   }
 }
 
-/// A small tilted label.
+/// A small dialog that owns its own text controller (so it is disposed safely).
+class _EditTaskDialog extends StatefulWidget {
+  final String initial;
+  const _EditTaskDialog({required this.initial});
+
+  @override
+  State<_EditTaskDialog> createState() => _EditTaskDialogState();
+}
+
+class _EditTaskDialogState extends State<_EditTaskDialog> {
+  late final TextEditingController _ctl =
+      TextEditingController(text: widget.initial);
+
+  @override
+  void dispose() {
+    _ctl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    return AlertDialog(
+      title: Text(l.taskEditTitle),
+      content: TextField(
+        controller: _ctl,
+        autofocus: true,
+        onSubmitted: (v) => Navigator.pop(context, v),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l.cancel),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(context, _ctl.text),
+          child: Text(l.taskSave),
+        ),
+      ],
+    );
+  }
+}
+
+/// A small tilted label. Its text shortens instead of overflowing.
 class _Tag extends StatelessWidget {
   final String text;
   final IconData icon;
@@ -433,7 +637,14 @@ class _Tag extends StatelessWidget {
           children: [
             Icon(icon, size: 15, color: T.vermilion),
             const SizedBox(width: 5),
-            Text(text, style: T.body(12, color: T.ink, weight: FontWeight.w800)),
+            Flexible(
+              child: Text(
+                text,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: T.body(12, color: T.ink, weight: FontWeight.w800),
+              ),
+            ),
           ],
         ),
       ),

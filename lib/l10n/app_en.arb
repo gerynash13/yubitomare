@@ -215,5 +215,21 @@
   "recTime": "{hours} h {minutes} min",
   "@recTime": { "placeholders": { "hours": { "type": "int" }, "minutes": { "type": "int" } } },
   "recMemo": "Notes from Tomarin",
-  "recEmpty": "Nothing yet. Let us start writing from today."
+  "recEmpty": "Nothing yet. Let us start writing from today.",
+  "statusPause": "Pause the guard",
+  "pauseTitle": "Really take a break?",
+  "pauseBody": "While paused, Tomarin can't stop you from scrolling.",
+  "pauseCancel": "Never mind",
+  "pauseConfirm": "Pause",
+  "taskEdit": "Edit",
+  "taskDelete": "Delete",
+  "taskEditTitle": "Edit task",
+  "taskSave": "Save",
+  "taskHint": "Long-press to edit or delete",
+  "cancel": "Cancel",
+  "checkAck": "Pi! There you are.",
+  "taskDoneTitle": "Is it really done?",
+  "taskDoneBody": "Once it's marked done, it can't be undone.",
+  "taskDoneYes": "Yes, it's done!",
+  "taskDoneNot": "Not yet"
 }

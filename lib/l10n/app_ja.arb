@@ -175,5 +175,21 @@
   "recHero": "今週、集中した時間",
   "recTime": "{hours}時間{minutes}分",
   "recMemo": "とまりんの連絡帳メモ",
-  "recEmpty": "まだ記録がないよ。今日から、いっしょにつけよ。"
+  "recEmpty": "まだ記録がないよ。今日から、いっしょにつけよ。",
+  "statusPause": "見張りを休む",
+  "pauseTitle": "ほんとに休む？",
+  "pauseBody": "休んでいる間は、スマホを見すぎても、とまりんは止めてあげられないよ。",
+  "pauseCancel": "やっぱりやめる",
+  "pauseConfirm": "休む",
+  "taskEdit": "編集",
+  "taskDelete": "削除",
+  "taskEditTitle": "タスクを編集",
+  "taskSave": "保存",
+  "taskHint": "長押しで編集・削除",
+  "cancel": "キャンセル",
+  "checkAck": "ぴっ！ ちゃんといたね。",
+  "taskDoneTitle": "ほんとに終わった？",
+  "taskDoneBody": "完了にすると、あとから戻せないよ。",
+  "taskDoneYes": "終わった！",
+  "taskDoneNot": "まだ"
 }

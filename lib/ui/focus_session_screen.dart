@@ -25,6 +25,8 @@ Duration _randomCheckDelay() {
 const Duration _checkWindow = kFocusTestMode ? Duration(seconds: 15) : Duration(minutes: 2);
 // How much time after the last answer still counts if the user never answers again.
 const Duration _maxTail = kFocusTestMode ? Duration(seconds: 45) : Duration(minutes: 14);
+// While a check is open and unanswered, repeat the soft buzz this often.
+const Duration _rebuzzEvery = kFocusTestMode ? Duration(seconds: 5) : Duration(seconds: 30);
 
 class FocusSessionScreen extends StatefulWidget {
   final String task;
@@ -46,6 +48,7 @@ class _FocusSessionScreenState extends State<FocusSessionScreen>
   int _minutes = 0;
   bool _checking = false;
   bool _finished = false;
+  bool _acked = false;
 
   @override
   void initState() {
@@ -69,6 +72,7 @@ class _FocusSessionScreenState extends State<FocusSessionScreen>
     _tick?.cancel();
     _checkTimer?.cancel();
     _windowTimer?.cancel();
+    _buzzTimer?.cancel();
     _breath.dispose();
     WakelockPlus.disable();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
@@ -91,41 +95,50 @@ class _FocusSessionScreenState extends State<FocusSessionScreen>
   void _startCheck() {
     if (_finished || !mounted) return;
     setState(() => _checking = true);
-    HapticFeedback.mediumImpact();
-    Future.delayed(const Duration(milliseconds: 350), HapticFeedback.heavyImpact);
+    _softBuzz();
+    _buzzTimer = Timer.periodic(_rebuzzEvery, (_) => _softBuzz());
     _windowTimer = Timer(_checkWindow, _missCheck);
   }
 
   void _confirm() {
     if (!_checking) return;
     _windowTimer?.cancel();
+    _buzzTimer?.cancel();
     HapticFeedback.selectionClick();
-    setState(() => _checking = false);
+    setState(() {
+      _checking = false;
+      _acked = true;
+    });
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted) setState(() => _acked = false);
+    });
     _confirmedAt = DateTime.now();
     _scheduleCheck();
   }
 
   void _missCheck() {
     if (_finished || !mounted) return;
+    _buzzTimer?.cancel();
     setState(() => _checking = false);
-    _scheduleCheck();
+    _finish(missed: true);
   }
 
   // ---------- finishing ----------
 
-  Future<void> _finish() async {
+  Future<void> _finish({bool missed = false}) async {
     if (_finished) return;
     _finished = true;
     _tick?.cancel();
     _checkTimer?.cancel();
     _windowTimer?.cancel();
+    _buzzTimer?.cancel();
     WakelockPlus.disable();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
     final end = DateTime.now();
     final minutes = end.difference(_start).inMinutes;
     // Time up to the last answer counts, plus a short tail after it.
-    final tail = end.difference(_confirmedAt);
+    final tail = missed ? Duration.zero : end.difference(_confirmedAt);
     final credited = _confirmedAt.difference(_start) + (tail > _maxTail ? _maxTail : tail);
     final creditedMin = math.min(credited.inMinutes, minutes);
 
@@ -147,6 +160,17 @@ class _FocusSessionScreenState extends State<FocusSessionScreen>
         ),
       ),
     );
+  }
+
+  static const _native = MethodChannel('detox_pet/usage');
+  Timer? _buzzTimer;
+
+  Future<void> _softBuzz() async {
+    try {
+      await _native.invokeMethod('softBuzz');
+    } catch (_) {
+      HapticFeedback.lightImpact(); // phone without the native method: best effort
+    }
   }
 
   // ---------- UI ----------
@@ -185,6 +209,15 @@ class _FocusSessionScreenState extends State<FocusSessionScreen>
                                 ),
                               ],
                             ),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  AnimatedOpacity(
+                    opacity: _acked ? 1 : 0,
+                    duration: const Duration(milliseconds: 300),
+                    child: Text(
+                      l.checkAck,
+                      style: T.body(16, color: T.persimmon, weight: FontWeight.w800),
                     ),
                   ),
                   const Spacer(),

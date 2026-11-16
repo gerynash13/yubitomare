@@ -1153,6 +1153,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Nothing yet. Let us start writing from today.'**
   String get recEmpty;
+
+  /// No description provided for @statusPause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause the guard'**
+  String get statusPause;
+
+  /// No description provided for @pauseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Really take a break?'**
+  String get pauseTitle;
+
+  /// No description provided for @pauseBody.
+  ///
+  /// In en, this message translates to:
+  /// **'While paused, Tomarin can\'t stop you from scrolling.'**
+  String get pauseBody;
+
+  /// No description provided for @pauseCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Never mind'**
+  String get pauseCancel;
+
+  /// No description provided for @pauseConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get pauseConfirm;
+
+  /// No description provided for @taskEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get taskEdit;
+
+  /// No description provided for @taskDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get taskDelete;
+
+  /// No description provided for @taskEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit task'**
+  String get taskEditTitle;
+
+  /// No description provided for @taskSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get taskSave;
+
+  /// No description provided for @taskHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Long-press to edit or delete'**
+  String get taskHint;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @checkAck.
+  ///
+  /// In en, this message translates to:
+  /// **'Pi! There you are.'**
+  String get checkAck;
+
+  /// No description provided for @taskDoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Is it really done?'**
+  String get taskDoneTitle;
+
+  /// No description provided for @taskDoneBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Once it\'s marked done, it can\'t be undone.'**
+  String get taskDoneBody;
+
+  /// No description provided for @taskDoneYes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, it\'s done!'**
+  String get taskDoneYes;
+
+  /// No description provided for @taskDoneNot.
+  ///
+  /// In en, this message translates to:
+  /// **'Not yet'**
+  String get taskDoneNot;
 }
 
 class _AppLocalizationsDelegate

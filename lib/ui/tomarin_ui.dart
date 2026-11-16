@@ -20,6 +20,9 @@ class TomarinSprite extends StatelessWidget {
   final double height;
   const TomarinSprite(this.pose, {super.key, this.height = 260});
 
+  // Must match the folder declared in pubspec.yaml (asset folders are not recursive).
+  static const _dir = 'assets/tomarin/tomarin_sprites';
+
   Widget _placeholder() => SizedBox(
         height: height,
         child: Icon(Icons.flutter_dash, size: height * 0.6, color: T.inkSoft),
@@ -27,15 +30,16 @@ class TomarinSprite extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final path = '$_dir/tomarin_${pose.name}.png';
     return Image.asset(
-      'assets/tomarin/tomarin_${pose.name}.png',
+      path,
       height: height,
       fit: BoxFit.contain,
       errorBuilder: (context, error, stack) {
-        // Until the neutral pose exists, the landing pose stands in for it.
+        debugPrint('Tomarin sprite failed to load: $path ($error)');
         if (pose == Pose.neutral) {
           return Image.asset(
-            'assets/tomarin/tomarin_landing.png',
+            '$_dir/tomarin_landing.png',
             height: height,
             fit: BoxFit.contain,
             errorBuilder: (context, error, stack) => _placeholder(),

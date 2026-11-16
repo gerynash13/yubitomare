@@ -10,6 +10,9 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Process
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import android.provider.Settings
 import android.util.Log
 import androidx.core.content.ContextCompat
@@ -73,6 +76,29 @@ class MainActivity : FlutterActivity() {
                 .addCategory(Intent.CATEGORY_HOME)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         )
+    }
+
+    // Two gentle pulses. Amplitude is 1-255: raise the 60s if you can't feel it, lower them if too strong.
+    private fun softBuzz() {
+        val vib: Vibrator = if (Build.VERSION.SDK_INT >= 31) {
+            (getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager).defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        }
+        if (!vib.hasVibrator()) return
+        val timings = longArrayOf(0, 80, 180, 80)
+        val amplitudes = intArrayOf(0, 60, 0, 60)
+        if (Build.VERSION.SDK_INT >= 26) {
+            val effect = if (vib.hasAmplitudeControl())
+                VibrationEffect.createWaveform(timings, amplitudes, -1)
+            else
+                VibrationEffect.createWaveform(timings, -1)
+            vib.vibrate(effect)
+        } else {
+            @Suppress("DEPRECATION")
+            vib.vibrate(timings, -1)
+        }
     }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
@@ -149,6 +175,10 @@ class MainActivity : FlutterActivity() {
                             .distinctBy { it["pkg"] }
                             .sortedBy { it["name"]!!.lowercase() }
                         result.success(apps)
+                    }
+                    "softBuzz" -> {
+                        softBuzz()
+                        result.success(null)
                     }
                     else -> result.notImplemented()
                 }

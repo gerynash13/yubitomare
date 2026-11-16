@@ -654,4 +654,53 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get recEmpty => 'Nothing yet. Let us start writing from today.';
+
+  @override
+  String get statusPause => 'Pause the guard';
+
+  @override
+  String get pauseTitle => 'Really take a break?';
+
+  @override
+  String get pauseBody =>
+      'While paused, Tomarin can\'t stop you from scrolling.';
+
+  @override
+  String get pauseCancel => 'Never mind';
+
+  @override
+  String get pauseConfirm => 'Pause';
+
+  @override
+  String get taskEdit => 'Edit';
+
+  @override
+  String get taskDelete => 'Delete';
+
+  @override
+  String get taskEditTitle => 'Edit task';
+
+  @override
+  String get taskSave => 'Save';
+
+  @override
+  String get taskHint => 'Long-press to edit or delete';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get checkAck => 'Pi! There you are.';
+
+  @override
+  String get taskDoneTitle => 'Is it really done?';
+
+  @override
+  String get taskDoneBody => 'Once it\'s marked done, it can\'t be undone.';
+
+  @override
+  String get taskDoneYes => 'Yes, it\'s done!';
+
+  @override
+  String get taskDoneNot => 'Not yet';
 }

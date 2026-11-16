@@ -4,11 +4,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 class Task {
   String text;
   bool done;
-  Task(this.text, {this.done = false});
+  String? doneOn; // the day it was finished, e.g. 2026-11-16
+  Task(this.text, {this.done = false, this.doneOn});
 
-  Map<String, dynamic> toJson() => {'text': text, 'done': done};
-  factory Task.fromJson(Map<String, dynamic> j) =>
-      Task(j['text'] as String, done: j['done'] as bool);
+  Map<String, dynamic> toJson() =>
+      {'text': text, 'done': done, if (doneOn != null) 'doneOn': doneOn};
+  factory Task.fromJson(Map<String, dynamic> j) => Task(
+        j['text'] as String,
+        done: j['done'] as bool,
+        doneOn: j['doneOn'] as String?,
+      );
 }
 
 class Store {
@@ -117,6 +122,8 @@ class Store {
     final n = DateTime.now();
     return '${n.year}-${n.month}-${n.day}';
   }
+
+  static String todayKey() => _todayKey();
 
   static Future<bool> hardnessAskedToday() async {
     final p = await SharedPreferences.getInstance();
