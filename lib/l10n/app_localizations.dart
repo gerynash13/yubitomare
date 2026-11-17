@@ -1267,6 +1267,216 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Did you finish this task?'**
   String get sumTaskAsk;
+
+  /// No description provided for @onbNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get onbNext;
+
+  /// No description provided for @onbBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get onbBack;
+
+  /// No description provided for @onbStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s start'**
+  String get onbStart;
+
+  /// No description provided for @onbWelcomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Peck. I\'m Tomarin.'**
+  String get onbWelcomeTitle;
+
+  /// No description provided for @onbWelcomeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'When you\'re about to scroll too much, I land on your screen and say something.'**
+  String get onbWelcomeBody;
+
+  /// No description provided for @onbBullet1.
+  ///
+  /// In en, this message translates to:
+  /// **'Open a guarded app and I land on it first.'**
+  String get onbBullet1;
+
+  /// No description provided for @onbBullet2.
+  ///
+  /// In en, this message translates to:
+  /// **'Want more time? Give an honest reason and get an extension. Up to 3 a day.'**
+  String get onbBullet2;
+
+  /// No description provided for @onbBullet3.
+  ///
+  /// In en, this message translates to:
+  /// **'Focus together with me, then write in the notebook afterwards.'**
+  String get onbBullet3;
+
+  /// No description provided for @onbNameHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'You can change this later in Settings. Leaving it blank is fine.'**
+  String get onbNameHelp;
+
+  /// No description provided for @onbHello.
+  ///
+  /// In en, this message translates to:
+  /// **'Peck. Nice to meet you, {name}.'**
+  String onbHello(String name);
+
+  /// No description provided for @onbAppsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Which apps should I guard?'**
+  String get onbAppsTitle;
+
+  /// No description provided for @onbAppsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick the apps you open without thinking. You can change this later.'**
+  String get onbAppsBody;
+
+  /// No description provided for @onbAppsSuggested.
+  ///
+  /// In en, this message translates to:
+  /// **'Commonly guarded'**
+  String get onbAppsSuggested;
+
+  /// No description provided for @onbAppsAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All apps'**
+  String get onbAppsAll;
+
+  /// No description provided for @onbAppsPicked.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} selected'**
+  String onbAppsPicked(int count);
+
+  /// No description provided for @onbAppsNeedOne.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick at least one'**
+  String get onbAppsNeedOne;
+
+  /// No description provided for @onbPermTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Permissions to keep watch'**
+  String get onbPermTitle;
+
+  /// No description provided for @onbPermBody.
+  ///
+  /// In en, this message translates to:
+  /// **'I need a few permissions to keep watch.'**
+  String get onbPermBody;
+
+  /// No description provided for @onbPermUsage.
+  ///
+  /// In en, this message translates to:
+  /// **'Usage access'**
+  String get onbPermUsage;
+
+  /// No description provided for @onbPermUsageWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'So I can tell which app is open right now.'**
+  String get onbPermUsageWhy;
+
+  /// No description provided for @onbPermOverlay.
+  ///
+  /// In en, this message translates to:
+  /// **'Display over other apps'**
+  String get onbPermOverlay;
+
+  /// No description provided for @onbPermOverlayWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'So I can land on top of the app.'**
+  String get onbPermOverlayWhy;
+
+  /// No description provided for @onbPermPopup.
+  ///
+  /// In en, this message translates to:
+  /// **'Display pop-up windows while running in the background'**
+  String get onbPermPopup;
+
+  /// No description provided for @onbPermPopupWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'On Xiaomi phones, my screen can\'t appear without this.'**
+  String get onbPermPopupWhy;
+
+  /// No description provided for @onbPermPopupHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn this on for Tomarin in the settings page. The name differs a little between versions. If it still doesn\'t work, also turn on Autostart and set Battery to No restrictions.'**
+  String get onbPermPopupHint;
+
+  /// No description provided for @onbPermNotif.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get onbPermNotif;
+
+  /// No description provided for @onbPermNotifWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'So the \"watching\" indicator is visible.'**
+  String get onbPermNotifWhy;
+
+  /// No description provided for @onbRecommended.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended'**
+  String get onbRecommended;
+
+  /// No description provided for @onbPermOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open settings'**
+  String get onbPermOpen;
+
+  /// No description provided for @onbPermGrant.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow'**
+  String get onbPermGrant;
+
+  /// No description provided for @onbPermConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'ve turned it on'**
+  String get onbPermConfirm;
+
+  /// No description provided for @onbPermGranted.
+  ///
+  /// In en, this message translates to:
+  /// **'Allowed'**
+  String get onbPermGranted;
+
+  /// No description provided for @onbFinishNeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on the required permissions first'**
+  String get onbFinishNeed;
+
+  /// No description provided for @onbPrivacyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'About your privacy'**
+  String get onbPrivacyTitle;
+
+  /// No description provided for @onbPrivacyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Which apps you use, and for how long, stays on this phone. Only when the AI writes Tomarin\'s lines are these sent: the name of the app you opened, your task names, notes you wrote, the name you chose, and short habit facts (like how often or what time).'**
+  String get onbPrivacyBody;
 }
 
 class _AppLocalizationsDelegate

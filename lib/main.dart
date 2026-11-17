@@ -5,16 +5,21 @@ import 'locale_controller.dart';
 import 'tracker_config.dart';
 import 'ui/home_shell.dart';
 import 'ui/theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'ui/onboarding_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final cfg = await TrackerConfig.load();
   appLocale.value = localeFromCode(cfg.language);
-  runApp(const DetoxApp());
+  final prefs = await SharedPreferences.getInstance();
+  final onboarded = prefs.getBool('onboarded') ?? false;
+  runApp(DetoxApp(onboarded: onboarded));
 }
 
 class DetoxApp extends StatelessWidget {
-  const DetoxApp({super.key});
+  final bool onboarded;
+  const DetoxApp({super.key, required this.onboarded});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +31,7 @@ class DetoxApp extends StatelessWidget {
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         theme: buildTheme(),
-        home: const HomeShell(),
+        home: onboarded ? const HomeShell() : const OnboardingScreen(),
       ),
     );
   }

@@ -690,4 +690,115 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get sumTaskAsk => 'このタスク、終わった？';
+
+  @override
+  String get onbNext => '次へ';
+
+  @override
+  String get onbBack => '戻る';
+
+  @override
+  String get onbStart => 'はじめる';
+
+  @override
+  String get onbWelcomeTitle => 'ぴとっ。とまりんだよ。';
+
+  @override
+  String get onbWelcomeBody => 'スマホを見すぎそうなとき、あなたの画面にとまって、声をかけるよ。';
+
+  @override
+  String get onbBullet1 => '見張るアプリを開くと、とまりんが先にぴとっと現れるよ。';
+
+  @override
+  String get onbBullet2 => 'もっと見たいときは、正直な理由を言って延長をもらおう。1日3回までだよ。';
+
+  @override
+  String get onbBullet3 => '集中するときはいっしょに。終わったら、連絡帳に書こうね。';
+
+  @override
+  String get onbNameHelp => 'あとから設定で変えられるよ。空欄でもだいじょうぶ。';
+
+  @override
+  String onbHello(String name) {
+    return 'ぴとっ。$name、よろしくね。';
+  }
+
+  @override
+  String get onbAppsTitle => 'どのアプリを見張る？';
+
+  @override
+  String get onbAppsBody => 'つい開いちゃうアプリを選んでね。あとから変えられるよ。';
+
+  @override
+  String get onbAppsSuggested => 'つい開きがちなアプリ';
+
+  @override
+  String get onbAppsAll => 'すべてのアプリ';
+
+  @override
+  String onbAppsPicked(int count) {
+    return '$count個えらんだよ';
+  }
+
+  @override
+  String get onbAppsNeedOne => '1つ以上えらんでね';
+
+  @override
+  String get onbPermTitle => '見守るための許可';
+
+  @override
+  String get onbPermBody => 'とまりんが見守るために、いくつか許可がいるよ。';
+
+  @override
+  String get onbPermUsage => '使用状況へのアクセス';
+
+  @override
+  String get onbPermUsageWhy => 'いま、どのアプリが開いているかを知るため。';
+
+  @override
+  String get onbPermOverlay => '他のアプリの上に表示';
+
+  @override
+  String get onbPermOverlayWhy => 'アプリの上に、とまりんを出すため。';
+
+  @override
+  String get onbPermPopup => 'バックグラウンドでポップアップを表示';
+
+  @override
+  String get onbPermPopupWhy => 'Xiaomiのスマホでは、これがないととまりんの画面が出ないよ。';
+
+  @override
+  String get onbPermPopupHint =>
+      '設定画面でとまりんをオンにしてね。名前は機種によって少し違うよ。うまく動かないときは、「自動起動」もオン、バッテリーは「制限なし」にしてね。';
+
+  @override
+  String get onbPermNotif => '通知';
+
+  @override
+  String get onbPermNotifWhy => '「見守り中」の表示を出すため。';
+
+  @override
+  String get onbRecommended => 'おすすめ';
+
+  @override
+  String get onbPermOpen => '設定を開く';
+
+  @override
+  String get onbPermGrant => '許可する';
+
+  @override
+  String get onbPermConfirm => '設定したよ';
+
+  @override
+  String get onbPermGranted => '許可ずみ';
+
+  @override
+  String get onbFinishNeed => '必須の許可をオンにしてね';
+
+  @override
+  String get onbPrivacyTitle => 'プライバシーのこと';
+
+  @override
+  String get onbPrivacyBody =>
+      'どのアプリをどれだけ使ったかは、この端末の中だけに記録されるよ。とまりんのひとことをAIが書くときだけ、開いたアプリの名前、タスク名、書いたひとこと、呼び名、習慣のひとこと（回数や時間帯など）が送られるよ。';
 }

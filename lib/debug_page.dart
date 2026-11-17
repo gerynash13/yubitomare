@@ -9,6 +9,7 @@ import 'tracker_config.dart';
 import 'locale_controller.dart';
 import 'ui/ai_line.dart';
 import 'ui/intercept_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Developer page: permissions, tracker on/off and test buttons.
 /// Open it from the Today tab by long-pressing the logo.
@@ -152,6 +153,17 @@ class _DebugPageState extends State<DebugPage> {
               ),
               ElevatedButton(onPressed: _showMemory, child: const Text('Pet memory')),
               ElevatedButton(onPressed: _previewIntercept, child: const Text('Preview intercept')),
+                            ElevatedButton(
+                onPressed: () async {
+                  final p = await SharedPreferences.getInstance();
+                  await p.setBool('onboarded', false);
+                  if (!mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Onboarding shows on the next app start')),
+                  );
+                },
+                child: const Text('Replay onboarding'),
+              ),
             ]),
             TextField(
               controller: _taskCtl,

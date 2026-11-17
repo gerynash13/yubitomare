@@ -714,4 +714,122 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sumTaskAsk => 'Did you finish this task?';
+
+  @override
+  String get onbNext => 'Next';
+
+  @override
+  String get onbBack => 'Back';
+
+  @override
+  String get onbStart => 'Let\'s start';
+
+  @override
+  String get onbWelcomeTitle => 'Peck. I\'m Tomarin.';
+
+  @override
+  String get onbWelcomeBody =>
+      'When you\'re about to scroll too much, I land on your screen and say something.';
+
+  @override
+  String get onbBullet1 => 'Open a guarded app and I land on it first.';
+
+  @override
+  String get onbBullet2 =>
+      'Want more time? Give an honest reason and get an extension. Up to 3 a day.';
+
+  @override
+  String get onbBullet3 =>
+      'Focus together with me, then write in the notebook afterwards.';
+
+  @override
+  String get onbNameHelp =>
+      'You can change this later in Settings. Leaving it blank is fine.';
+
+  @override
+  String onbHello(String name) {
+    return 'Peck. Nice to meet you, $name.';
+  }
+
+  @override
+  String get onbAppsTitle => 'Which apps should I guard?';
+
+  @override
+  String get onbAppsBody =>
+      'Pick the apps you open without thinking. You can change this later.';
+
+  @override
+  String get onbAppsSuggested => 'Commonly guarded';
+
+  @override
+  String get onbAppsAll => 'All apps';
+
+  @override
+  String onbAppsPicked(int count) {
+    return '$count selected';
+  }
+
+  @override
+  String get onbAppsNeedOne => 'Pick at least one';
+
+  @override
+  String get onbPermTitle => 'Permissions to keep watch';
+
+  @override
+  String get onbPermBody => 'I need a few permissions to keep watch.';
+
+  @override
+  String get onbPermUsage => 'Usage access';
+
+  @override
+  String get onbPermUsageWhy => 'So I can tell which app is open right now.';
+
+  @override
+  String get onbPermOverlay => 'Display over other apps';
+
+  @override
+  String get onbPermOverlayWhy => 'So I can land on top of the app.';
+
+  @override
+  String get onbPermPopup =>
+      'Display pop-up windows while running in the background';
+
+  @override
+  String get onbPermPopupWhy =>
+      'On Xiaomi phones, my screen can\'t appear without this.';
+
+  @override
+  String get onbPermPopupHint =>
+      'Turn this on for Tomarin in the settings page. The name differs a little between versions. If it still doesn\'t work, also turn on Autostart and set Battery to No restrictions.';
+
+  @override
+  String get onbPermNotif => 'Notifications';
+
+  @override
+  String get onbPermNotifWhy => 'So the \"watching\" indicator is visible.';
+
+  @override
+  String get onbRecommended => 'Recommended';
+
+  @override
+  String get onbPermOpen => 'Open settings';
+
+  @override
+  String get onbPermGrant => 'Allow';
+
+  @override
+  String get onbPermConfirm => 'I\'ve turned it on';
+
+  @override
+  String get onbPermGranted => 'Allowed';
+
+  @override
+  String get onbFinishNeed => 'Turn on the required permissions first';
+
+  @override
+  String get onbPrivacyTitle => 'About your privacy';
+
+  @override
+  String get onbPrivacyBody =>
+      'Which apps you use, and for how long, stays on this phone. Only when the AI writes Tomarin\'s lines are these sent: the name of the app you opened, your task names, notes you wrote, the name you chose, and short habit facts (like how often or what time).';
 }

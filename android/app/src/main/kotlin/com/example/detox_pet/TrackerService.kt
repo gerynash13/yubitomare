@@ -51,6 +51,11 @@ class TrackerService : Service() {
         const val USE_FLUTTER_INTERCEPT = true
         val PASS_OPTIONS = listOf(5, 10, 15)       // minutes
         val WAIT_SECONDS = listOf(5, 10, 20)       // countdown per level
+        // How long to wait for the Flutter card to report in before giving up on it.
+        const val CARD_ACK_TIMEOUT_MS = 6_000L
+        // true: show the plain native card when the Flutter card cannot appear.
+        // false: show nothing for that visit (the next visit tries again).
+        const val NATIVE_FALLBACK = true
     }
 
     private val handler = Handler(Looper.getMainLooper())
@@ -210,14 +215,14 @@ class TrackerService : Service() {
 
         val pkg = currentPkg
 
-        // The Flutter card lives in our own app. While it is up, wait for the answer.
+        // The Flutter card lives in our own app and tells us when it is on screen.
+        // Until then we wait. We no longer guess from the foreground app (usage events can lag).
         if (flutterIntercept) {
-            if (pkg == packageName) return
-            if (now - flutterLaunchedAt > 5_000) {
-                Log.w("Tomarin", "The Flutter card did not appear (foreground app: $pkg, ${now - flutterLaunchedAt} ms after launch), using the native card")
-                fallBackToNativeCard()
-                return
-            }
+            if (InterceptBridge.cardShown) return
+            if (now - flutterLaunchedAt <= CARD_ACK_TIMEOUT_MS) return
+            Log.w("Tomarin", "The Flutter card did not report in (foreground app: $pkg, ${now - flutterLaunchedAt} ms after launch)")
+            if (NATIVE_FALLBACK) fallBackToNativeCard() else giveUpOnCard()
+            return
         }
 
         val appName = if (pkg != null) cfg.apps[pkg] else null
@@ -321,7 +326,8 @@ class TrackerService : Service() {
     /** Opens MainActivity over the guarded app, where Flutter draws the card. */
     private fun launchFlutterCard(pkg: String, appName: String, info: CardInfo): Boolean {
         InterceptBridge.onResult = { action, minutes, reason ->
-            flutterIntercept = false
+            InterceptBridge.cardShown = false
+            flutterIntercept = true
             when (action) {
                 "back" -> answerBack(appName, info.used)
                 "pass" -> answerPass(pkg, appName, info.used, minutes, reason)
@@ -366,6 +372,13 @@ class TrackerService : Service() {
         } else {
             visit = Visit.NEW
         }
+    }
+
+    /** No native card: skip this visit. Nothing else happens until the user leaves the guarded app. */
+    private fun giveUpOnCard() {
+        InterceptBridge.onResult = null
+        flutterIntercept = false
+        visit = Visit.SHOWING
     }
 
     /** The plain card drawn with native views (first spike). */

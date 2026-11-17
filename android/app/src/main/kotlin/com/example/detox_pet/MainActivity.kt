@@ -16,6 +16,7 @@ import android.os.VibratorManager
 import android.provider.Settings
 import android.util.Log
 import androidx.core.content.ContextCompat
+import androidx.core.app.NotificationManagerCompat
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -76,6 +77,50 @@ class MainActivity : FlutterActivity() {
                 .addCategory(Intent.CATEGORY_HOME)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         )
+    }
+
+    private fun isXiaomi(): Boolean {
+        val brand = Build.BRAND.lowercase()
+        return Build.MANUFACTURER.equals("xiaomi", ignoreCase = true) ||
+            brand == "xiaomi" || brand == "redmi" || brand == "poco"
+    }
+
+    // Xiaomi's "Display pop-up windows while running in the background" is a hidden app-op (10021).
+    // There is no public API, so this is best effort: null means "cannot tell".
+    private fun backgroundStartAllowed(): Boolean? {
+        return try {
+            val ops = getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
+            val m = ops.javaClass.getMethod(
+                "checkOpNoThrow",
+                Int::class.javaPrimitiveType,
+                Int::class.javaPrimitiveType,
+                String::class.java
+            )
+            (m.invoke(ops, 10021, Process.myUid(), packageName) as Int) == AppOpsManager.MODE_ALLOWED
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    private fun openXiaomiPermissions() {
+        val attempts = listOf(
+            Intent("miui.intent.action.APP_PERM_EDITOR").apply {
+                setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.PermissionsEditorActivity")
+                putExtra("extra_pkgname", packageName)
+            },
+            Intent("miui.intent.action.APP_PERM_EDITOR").apply {
+                setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.AppPermissionsEditorActivity")
+                putExtra("extra_pkgname", packageName)
+            },
+            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName"))
+        )
+        for (intent in attempts) {
+            try {
+                startActivity(intent)
+                return
+            } catch (_: Exception) {
+            }
+        }
     }
 
     // Two gentle pulses. Amplitude is 1-255: raise the 60s if you can't feel it, lower them if too strong.
@@ -178,6 +223,30 @@ class MainActivity : FlutterActivity() {
                     }
                     "softBuzz" -> {
                         softBuzz()
+                        result.success(null)
+                    }
+                    "hasNotificationPermission" -> result.success(
+                        NotificationManagerCompat.from(this).areNotificationsEnabled()
+                    )
+                    "openNotificationSettings" -> {
+                        val i = if (Build.VERSION.SDK_INT >= 26) {
+                            Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                                .putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
+                        } else {
+                            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName"))
+                        }
+                        startActivity(i)
+                        result.success(null)
+                    }
+                    "isXiaomi" -> result.success(isXiaomi())
+                    "hasBackgroundStartPermission" -> result.success(backgroundStartAllowed())
+                    "openBackgroundStartSettings" -> {
+                        openXiaomiPermissions()
+                        result.success(null)
+                    }
+                    "interceptShown" -> {
+                        Log.d("Tomarin", "Flutter card reported in")
+                        InterceptBridge.cardShown = true
                         result.success(null)
                     }
                     else -> result.notImplemented()

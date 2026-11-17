@@ -60,6 +60,8 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
       nav.popUntil((route) => route.isFirst);
     }
 
+    _channel.invokeMethod('interceptShown');
+    
     await nav.push(MaterialPageRoute(
       builder: (_) => InterceptScreen(
         app: app,
