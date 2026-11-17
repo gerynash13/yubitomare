@@ -684,7 +684,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get taskSave => 'Save';
 
   @override
-  String get taskHint => 'Long-press to edit or delete';
+  String get taskHint => 'Long-press: where to start, edit, delete';
 
   @override
   String get cancel => 'Cancel';
@@ -703,4 +703,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get taskDoneNot => 'Not yet';
+
+  @override
+  String get blockMenu => 'Where do I start?';
+
+  @override
+  String blockAsk(String task) {
+    return 'About $task: what feels hardest?';
+  }
+
+  @override
+  String get sumTaskAsk => 'Did you finish this task?';
 }

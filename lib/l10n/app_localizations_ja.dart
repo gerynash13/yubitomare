@@ -660,7 +660,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get taskSave => '保存';
 
   @override
-  String get taskHint => '長押しで編集・削除';
+  String get taskHint => '長押しで「どこから始める？」・編集・削除';
 
   @override
   String get cancel => 'キャンセル';
@@ -679,4 +679,15 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get taskDoneNot => 'まだ';
+
+  @override
+  String get blockMenu => 'どこから始める？';
+
+  @override
+  String blockAsk(String task) {
+    return '「$task」、どこがいちばん手をつけにくい？';
+  }
+
+  @override
+  String get sumTaskAsk => 'このタスク、終わった？';
 }

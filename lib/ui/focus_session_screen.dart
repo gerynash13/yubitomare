@@ -157,6 +157,7 @@ class _FocusSessionScreenState extends State<FocusSessionScreen>
           minutes: minutes,
           credited: creditedMin,
           bond: bond,
+          task: widget.task,
         ),
       ),
     );

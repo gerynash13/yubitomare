@@ -185,11 +185,14 @@
   "taskDelete": "削除",
   "taskEditTitle": "タスクを編集",
   "taskSave": "保存",
-  "taskHint": "長押しで編集・削除",
+  "taskHint": "長押しで「どこから始める？」・編集・削除",
   "cancel": "キャンセル",
   "checkAck": "ぴっ！ ちゃんといたね。",
   "taskDoneTitle": "ほんとに終わった？",
   "taskDoneBody": "完了にすると、あとから戻せないよ。",
   "taskDoneYes": "終わった！",
-  "taskDoneNot": "まだ"
+  "taskDoneNot": "まだ",
+  "blockMenu": "どこから始める？",
+  "blockAsk": "「{task}」、どこがいちばん手をつけにくい？",
+  "sumTaskAsk": "このタスク、終わった？"
 }

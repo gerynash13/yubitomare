@@ -10,6 +10,7 @@ import '../storage.dart';
 import '../tracker_config.dart';
 import 'theme.dart';
 import 'tomarin_ui.dart';
+import 'block_helper.dart';
 
 enum _Status { running, paused, missing }
 
@@ -207,6 +208,11 @@ class _TodayScreenState extends State<TodayScreen> with WidgetsBindingObserver {
               ),
             ),
             ListTile(
+              leading: const Icon(Icons.lightbulb_outline, color: T.persimmonDeep),
+              title: Text(l.blockMenu, style: T.body(16, weight: FontWeight.w800)),
+              onTap: () => Navigator.pop(sheetCtx, 'block'),
+            ),
+            ListTile(
               leading: const Icon(Icons.edit_outlined),
               title: Text(l.taskEdit, style: T.body(16, weight: FontWeight.w700)),
               onTap: () => Navigator.pop(sheetCtx, 'edit'),
@@ -225,6 +231,7 @@ class _TodayScreenState extends State<TodayScreen> with WidgetsBindingObserver {
       ),
     );
     if (!mounted) return;
+    if (action == 'block') await showBlockHelper(context, t.text);
     if (action == 'delete') await _remove(t);
     if (action == 'edit') await _edit(t);
   }

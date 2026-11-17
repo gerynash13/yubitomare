@@ -1211,7 +1211,7 @@ abstract class AppLocalizations {
   /// No description provided for @taskHint.
   ///
   /// In en, this message translates to:
-  /// **'Long-press to edit or delete'**
+  /// **'Long-press: where to start, edit, delete'**
   String get taskHint;
 
   /// No description provided for @cancel.
@@ -1249,6 +1249,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not yet'**
   String get taskDoneNot;
+
+  /// No description provided for @blockMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Where do I start?'**
+  String get blockMenu;
+
+  /// No description provided for @blockAsk.
+  ///
+  /// In en, this message translates to:
+  /// **'About {task}: what feels hardest?'**
+  String blockAsk(String task);
+
+  /// No description provided for @sumTaskAsk.
+  ///
+  /// In en, this message translates to:
+  /// **'Did you finish this task?'**
+  String get sumTaskAsk;
 }
 
 class _AppLocalizationsDelegate

@@ -9,6 +9,7 @@ import '../locale_controller.dart';
 import '../reflect_api.dart';
 import '../tracker_config.dart';
 import 'crisis_screen.dart';
+import '../storage.dart';
 
 /// Shown right after a focus session. The user can write what they did and how well it went.
 /// Everything here is optional: closing the book is always allowed.
@@ -18,6 +19,7 @@ class SummaryScreen extends StatefulWidget {
   final int minutes; // how long the session lasted
   final int credited; // the part Tomarin could confirm
   final BondResult bond;
+  final String task;
 
   const SummaryScreen({
     super.key,
@@ -26,6 +28,7 @@ class SummaryScreen extends StatefulWidget {
     required this.minutes,
     required this.credited,
     required this.bond,
+    required this.task,
   });
 
   @override
@@ -39,6 +42,110 @@ class _SummaryScreenState extends State<SummaryScreen> {
   String _reply = '';
   bool _waiting = false;
   bool _crisis = false;
+  bool _taskOpen = false; // the card is shown
+  bool _taskDone = false;
+  int _taskGain = 0;
+  bool _taskLevelUp = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkTask();
+  }
+
+  // Show the card only if that task still exists and is not done.
+  Future<void> _checkTask() async {
+    if (widget.task.isEmpty) return;
+    final tasks = await Store.loadTasks();
+    if (!mounted) return;
+    setState(() => _taskOpen = tasks.any((t) => t.text == widget.task && !t.done));
+  }
+
+  Future<void> _finishTask() async {
+    final l = AppLocalizations.of(context)!;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.taskDoneTitle),
+        content: Text(l.taskDoneBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l.taskDoneNot),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l.taskDoneYes),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !mounted) return;
+    final tasks = await Store.loadTasks();
+    final i = tasks.indexWhere((t) => t.text == widget.task && !t.done);
+    if (i < 0) {
+      setState(() => _taskOpen = false);
+      return;
+    }
+    tasks[i].done = true;
+    tasks[i].doneOn = Store.todayKey();
+    await Store.saveTasks(tasks);
+    final r = await Bond.addTaskDone();
+    if (!mounted) return;
+    setState(() {
+      _taskDone = true;
+      _taskGain = r.gained;
+      _taskLevelUp = r.leveledUp;
+    });
+  }
+
+  Widget _taskCard(AppLocalizations l) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: _taskDone ? T.paperLow : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _taskDone ? T.vermilion : T.line),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(l.sumTaskAsk, style: T.body(15, weight: FontWeight.w800)),
+          const SizedBox(height: 6),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  widget.task,
+                  style: T.body(16, weight: FontWeight.w700).copyWith(
+                    decoration: _taskDone ? TextDecoration.lineThrough : null,
+                    color: _taskDone ? T.inkSoft : T.ink,
+                  ),
+                ),
+              ),
+              if (_taskDone) HankoStamp(text: l.todayDoneStamp, size: 46, angle: -0.2),
+            ],
+          ),
+          const SizedBox(height: 10),
+          if (!_taskDone)
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                onPressed: _finishTask,
+                child: Text(l.taskDoneYes),
+              ),
+            )
+          else if (_taskGain > 0)
+            Text(
+              _taskLevelUp
+                  ? '${l.bondGainSmall(_taskGain)}  ${l.bondUp}'
+                  : l.bondGainSmall(_taskGain),
+              style: T.body(13, color: T.vermilion, weight: FontWeight.w700),
+            ),
+        ],
+      ),
+    );
+  }
 
   // A note that sounds like real distress is never sent to the AI.
   static final _heavyWords = RegExp(
@@ -287,6 +394,10 @@ class _SummaryScreenState extends State<SummaryScreen> {
                 ],
               ),
             ),
+            if (_taskOpen) ...[
+              const SizedBox(height: 16),
+              _taskCard(l),
+            ],
             const SizedBox(height: 16),
             _rewards(l),
             const SizedBox(height: 18),

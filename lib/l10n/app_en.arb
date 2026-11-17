@@ -225,11 +225,15 @@
   "taskDelete": "Delete",
   "taskEditTitle": "Edit task",
   "taskSave": "Save",
-  "taskHint": "Long-press to edit or delete",
+  "taskHint": "Long-press: where to start, edit, delete",
   "cancel": "Cancel",
   "checkAck": "Pi! There you are.",
   "taskDoneTitle": "Is it really done?",
   "taskDoneBody": "Once it's marked done, it can't be undone.",
   "taskDoneYes": "Yes, it's done!",
-  "taskDoneNot": "Not yet"
+  "taskDoneNot": "Not yet",
+  "blockMenu": "Where do I start?",
+  "blockAsk": "About {task}: what feels hardest?",
+  "@blockAsk": { "placeholders": { "task": { "type": "String" } } },
+  "sumTaskAsk": "Did you finish this task?"
 }
