@@ -53,6 +53,8 @@ class TrackerService : Service() {
         val WAIT_SECONDS = listOf(5, 10, 20)       // countdown per level
         // How long to wait for the Flutter card to report in before giving up on it.
         const val CARD_ACK_TIMEOUT_MS = 6_000L
+        // Safety valve: if a card that reported in never seems to close, clean up after this long.
+        const val CARD_MAX_MS = 120_000L
         // true: show the plain native card when the Flutter card cannot appear.
         // false: show nothing for that visit (the next visit tries again).
         const val NATIVE_FALLBACK = true
@@ -74,6 +76,8 @@ class TrackerService : Service() {
     private var shownLevel = 0
     private var flutterIntercept = false   // the Flutter card is up (or starting)
     private var flutterLaunchedAt = 0L
+    private var flutterAcked = false   // Flutter reported that the card is on screen
+    private var sawOwnApp = false      // our own app came to the front since the card was launched
     private var warnedAboutOverlay = false
 
     private val screenReceiver = object : BroadcastReceiver() {
@@ -215,14 +219,29 @@ class TrackerService : Service() {
 
         val pkg = currentPkg
 
-        // The Flutter card lives in our own app and tells us when it is on screen.
-        // Until then we wait. We no longer guess from the foreground app (usage events can lag).
         if (flutterIntercept) {
-            if (InterceptBridge.cardShown) return
-            if (now - flutterLaunchedAt <= CARD_ACK_TIMEOUT_MS) return
-            Log.w("Tomarin", "The Flutter card did not report in (foreground app: $pkg, ${now - flutterLaunchedAt} ms after launch)")
-            if (NATIVE_FALLBACK) fallBackToNativeCard() else giveUpOnCard()
-            return
+            if (pkg == packageName) sawOwnApp = true
+            val waited = now - flutterLaunchedAt
+
+            if (!flutterAcked) {
+                // The card never reported in: it really failed to appear.
+                if (waited <= CARD_ACK_TIMEOUT_MS) return
+                Log.w("Tomarin", "The Flutter card did not report in (foreground app: $pkg, $waited ms after launch)")
+                if (NATIVE_FALLBACK) fallBackToNativeCard() else giveUpOnCard()
+                return
+            }
+
+            // The card was shown, so the old card must never appear for this visit.
+            // Wait for the user's answer. If the card is gone and no answer reached us, clean up.
+            val gone = (sawOwnApp && pkg != packageName) || waited > CARD_MAX_MS
+            if (!gone) return
+            Log.w("Tomarin", "The card closed but no answer reached the service (foreground app: $pkg, $waited ms after launch)")
+            InterceptBridge.onResult = null
+            InterceptBridge.onShown = null
+            flutterIntercept = false
+            shownApp?.let { logIntercept(it, "left", shownLevel, 0) }
+            visit = Visit.NEW
+            // keep going: if a guarded app is in front, the next card is decided below
         }
 
         val appName = if (pkg != null) cfg.apps[pkg] else null
@@ -326,14 +345,17 @@ class TrackerService : Service() {
     /** Opens MainActivity over the guarded app, where Flutter draws the card. */
     private fun launchFlutterCard(pkg: String, appName: String, info: CardInfo): Boolean {
         InterceptBridge.onResult = { action, minutes, reason ->
-            InterceptBridge.cardShown = false
-            flutterIntercept = true
+            Log.d("Tomarin", "Card answered: $action")
+            flutterIntercept = false
             when (action) {
                 "back" -> answerBack(appName, info.used)
                 "pass" -> answerPass(pkg, appName, info.used, minutes, reason)
                 else -> answerLeft(appName, info.used)
             }
         }
+        flutterAcked = false
+        sawOwnApp = false
+        InterceptBridge.onShown = { flutterAcked = true }
         flutterIntercept = true
         flutterLaunchedAt = System.currentTimeMillis()
         return try {
@@ -352,12 +374,14 @@ class TrackerService : Service() {
             Log.w("Tomarin", "Could not start the Flutter card", e)
             flutterIntercept = false
             InterceptBridge.onResult = null
+            InterceptBridge.onShown = null
             false
         }
     }
 
     /** The Flutter card never showed up (the phone blocked it). Show the plain card instead. */
     private fun fallBackToNativeCard() {
+        InterceptBridge.onShown = null
         InterceptBridge.onResult = null
         flutterIntercept = false
         val cfg = loadConfig()
@@ -376,6 +400,7 @@ class TrackerService : Service() {
 
     /** No native card: skip this visit. Nothing else happens until the user leaves the guarded app. */
     private fun giveUpOnCard() {
+        InterceptBridge.onShown = null
         InterceptBridge.onResult = null
         flutterIntercept = false
         visit = Visit.SHOWING

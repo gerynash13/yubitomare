@@ -245,8 +245,7 @@ class MainActivity : FlutterActivity() {
                         result.success(null)
                     }
                     "interceptShown" -> {
-                        Log.d("Tomarin", "Flutter card reported in")
-                        InterceptBridge.cardShown = true
+                        InterceptBridge.shown()
                         result.success(null)
                     }
                     else -> result.notImplemented()
