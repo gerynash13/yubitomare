@@ -172,6 +172,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   String _displayName(AppLocalizations l) {
     final n = _nameCtl.text.trim();
     if (n.isEmpty) return '';
+    // Suffixes only exist in Japanese.
+    if (Localizations.localeOf(context).languageCode != 'ja') return n;
     final s = switch (_suffix) {
       'san' => l.suffixSan,
       'kun' => l.suffixKun,
@@ -367,17 +369,18 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               ),
             ),
           ),
-          const SizedBox(height: 14),
-          SegmentedButton<String>(
-            segments: [
-              ButtonSegment(value: 'san', label: Text(l.suffixSan)),
-              ButtonSegment(value: 'kun', label: Text(l.suffixKun)),
-              ButtonSegment(value: 'chan', label: Text(l.suffixChan)),
-              ButtonSegment(value: 'none', label: Text(l.suffixNone)),
-            ],
-            selected: {_suffix},
-            onSelectionChanged: (s) => setState(() => _suffix = s.first),
-          ),
+          if (Localizations.localeOf(context).languageCode == 'ja') ...[
+            const SizedBox(height: 14),
+            SegmentedButton<String>(
+              segments: [
+                ButtonSegment(value: 'san', label: Text(l.suffixSan)),
+                ButtonSegment(value: 'kun', label: Text(l.suffixKun)),
+                ButtonSegment(value: 'chan', label: Text(l.suffixChan)),
+                ButtonSegment(value: 'none', label: Text(l.suffixNone)),
+              ],
+              selected: {_suffix},
+              onSelectionChanged: (s) => setState(() => _suffix = s.first),
+            ),
           const SizedBox(height: 18),
           if (shown.isNotEmpty)
             Text(
@@ -392,7 +395,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             style: T.body(12, color: T.inkSoft),
           ),
         ],
-      ),
+      ],),
     );
   }
 

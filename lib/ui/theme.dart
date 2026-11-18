@@ -45,6 +45,14 @@ class T {
         fontWeight: weight,
         height: height,
       );
+
+  // Segmented buttons in the app's colours (the default is purple).
+  static ButtonStyle get segmentStyle => SegmentedButton.styleFrom(
+        selectedBackgroundColor: persimmon,
+        selectedForegroundColor: ink,
+        foregroundColor: inkSoft,
+        side: const BorderSide(color: line),
+      );
 }
 
 ThemeData buildTheme() {

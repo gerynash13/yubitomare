@@ -272,5 +272,9 @@
   "onbPermGranted": "Allowed",
   "onbFinishNeed": "Turn on the required permissions first",
   "onbPrivacyTitle": "About your privacy",
-  "onbPrivacyBody": "Which apps you use, and for how long, stays on this phone. Only when the AI writes Tomarin's lines are these sent: the name of the app you opened, your task names, notes you wrote, the name you chose, and short habit facts (like how often or what time)."
+  "onbPrivacyBody": "Which apps you use, and for how long, stays on this phone. Only when the AI writes Tomarin's lines are these sent: the name of the app you opened, your task names, notes you wrote, the name you chose, and short habit facts (like how often or what time).",
+  "setLongestPass": "Longest extension",
+  "setLongestPassHelp": "Extension buttons never go above the length you pick here.",
+  "setPermissions": "Guard status",
+  "setCrisisSub": "Free phone lines you can call when things feel heavy."
 }

@@ -57,7 +57,7 @@ class TrackerService : Service() {
         const val CARD_MAX_MS = 120_000L
         // true: show the plain native card when the Flutter card cannot appear.
         // false: show nothing for that visit (the next visit tries again).
-        const val NATIVE_FALLBACK = true
+        const val NATIVE_FALLBACK = false
     }
 
     private val handler = Handler(Looper.getMainLooper())
@@ -77,6 +77,7 @@ class TrackerService : Service() {
     private var flutterIntercept = false   // the Flutter card is up (or starting)
     private var flutterLaunchedAt = 0L
     private var flutterAcked = false   // Flutter reported that the card is on screen
+    private var lastLoggedPkg: String? = null
     private var sawOwnApp = false      // our own app came to the front since the card was launched
     private var warnedAboutOverlay = false
 
@@ -219,6 +220,11 @@ class TrackerService : Service() {
 
         val pkg = currentPkg
 
+        if (pkg != lastLoggedPkg) {
+            lastLoggedPkg = pkg
+            Log.d("Tomarin", "Foreground: $pkg guarded=${pkg != null && cfg.apps.containsKey(pkg)} (guarding ${cfg.apps.size} apps, visit=$visit)")
+        }
+
         if (flutterIntercept) {
             if (pkg == packageName) sawOwnApp = true
             val waited = now - flutterLaunchedAt
@@ -322,7 +328,8 @@ class TrackerService : Service() {
         shownApp = appName
         shownLevel = info.used
         if (USE_FLUTTER_INTERCEPT && launchFlutterCard(pkg, appName, info)) return
-        showNativeCard(pkg, appName, info)
+        if (NATIVE_FALLBACK) showNativeCard(pkg, appName, info)
+        else Log.w("Tomarin", "Card could not be started: showing nothing for this visit")
     }
 
     // What happens after each answer, shared by both kinds of card.
