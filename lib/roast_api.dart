@@ -43,10 +43,11 @@ Future<String> fetchRoast({
       'shout': shout,
       'lastReason': lastReason,
       'lastApp': lastApp,
+      'hour': DateTime.now().hour,
     }),
   );
   if (res.statusCode != 200) {
     throw Exception('Roast failed: ${res.statusCode} ${res.body}');
   }
-  return (jsonDecode(res.body) as Map)['roast'] as String;
+  return (jsonDecode(utf8.decode(res.bodyBytes)) as Map)['roast'] as String;
 }

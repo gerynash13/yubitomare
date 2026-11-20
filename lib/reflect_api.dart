@@ -19,7 +19,7 @@ Future<String?> fetchReflection({
     Uri.parse('$supabaseUrl/functions/v1/reflect'),
     headers: {
       'Authorization': 'Bearer $supabaseAnonKey',
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json; charset=utf-8',
     },
     body: jsonEncode({
       'lang': lang,

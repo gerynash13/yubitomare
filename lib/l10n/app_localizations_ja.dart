@@ -801,4 +801,16 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get onbPrivacyBody =>
       'どのアプリをどれだけ使ったかは、この端末の中だけに記録されるよ。とまりんのひとことをAIが書くときだけ、開いたアプリの名前、タスク名、書いたひとこと、呼び名、習慣のひとこと（回数や時間帯など）が送られるよ。';
+
+  @override
+  String get setLongestPass => 'いちばん長い延長';
+
+  @override
+  String get setLongestPassHelp => '延長ボタンは、ここで選んだ分数までしか出ないよ。';
+
+  @override
+  String get setPermissions => '見守りの状態';
+
+  @override
+  String get setCrisisSub => 'しんどいときに、電話で話せる窓口があるよ。';
 }

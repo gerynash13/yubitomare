@@ -1477,6 +1477,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Which apps you use, and for how long, stays on this phone. Only when the AI writes Tomarin\'s lines are these sent: the name of the app you opened, your task names, notes you wrote, the name you chose, and short habit facts (like how often or what time).'**
   String get onbPrivacyBody;
+
+  /// No description provided for @setLongestPass.
+  ///
+  /// In en, this message translates to:
+  /// **'Longest extension'**
+  String get setLongestPass;
+
+  /// No description provided for @setLongestPassHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Extension buttons never go above the length you pick here.'**
+  String get setLongestPassHelp;
+
+  /// No description provided for @setPermissions.
+  ///
+  /// In en, this message translates to:
+  /// **'Guard status'**
+  String get setPermissions;
+
+  /// No description provided for @setCrisisSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Free phone lines you can call when things feel heavy.'**
+  String get setCrisisSub;
 }
 
 class _AppLocalizationsDelegate

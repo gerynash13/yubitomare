@@ -832,4 +832,18 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get onbPrivacyBody =>
       'Which apps you use, and for how long, stays on this phone. Only when the AI writes Tomarin\'s lines are these sent: the name of the app you opened, your task names, notes you wrote, the name you chose, and short habit facts (like how often or what time).';
+
+  @override
+  String get setLongestPass => 'Longest extension';
+
+  @override
+  String get setLongestPassHelp =>
+      'Extension buttons never go above the length you pick here.';
+
+  @override
+  String get setPermissions => 'Guard status';
+
+  @override
+  String get setCrisisSub =>
+      'Free phone lines you can call when things feel heavy.';
 }
